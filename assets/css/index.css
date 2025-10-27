@@ -1,0 +1,819 @@
+:root {
+    --bg-gradient-start: #fff;
+    --bg-gradient-end: #e9ecef;
+    --text-color-primary: #333;
+    --text-color-secondary: #6c757d;
+    --accent-color: #4CAF50;
+    --accent-color-darker: #45a049;
+    --accent-color-darkest: #2cb654;
+    --accent-color-bright: #43ea77;
+    --accent-color-light: #e9f5ec;
+    --accent-text-color: #388e3c; /* Used for step titles and default step circle text */
+    --border-color-light: #ddd;
+    --border-color-medium: #c6e7c9; /* Used for stepper progress bar default and step circle border */
+    --card-bg: #fff;
+    --card-shadow: rgba(0, 0, 0, 0.1);
+    --table-header-bg: #f2f2f2;
+    --table-row-even-bg: #f9f9f9;
+    --table-row-hover-bg: #f1f1f1;
+    --progress-line-bg: #e7edf0;
+    --progress-fill-gradient-start: var(--accent-color-bright);
+    --progress-fill-gradient-end: var(--accent-color-darkest);
+    --progress-btn-default-border: #adb5bd;
+    --progress-btn-default-text: #adb5bd;
+    --progress-btn-default-bg: #fff;
+    --progress-label-default-text: #6c757d;
+    --progress-btn-completed-bg: var(--accent-color-bright);
+    --progress-btn-completed-border: var(--accent-color-darkest);
+    --progress-btn-completed-text: #fff;
+    --progress-btn-active-bg: #fff;
+    --progress-btn-active-border: var(--accent-color-darkest);
+    --progress-btn-active-text: var(--accent-color-darkest);
+    --progress-btn-active-shadow: rgba(44, 182, 84, 0.25);
+    --progress-label-active-text: var(--accent-color-darkest);
+    --nav-button-bg: var(--accent-color-darkest);
+    --nav-button-hover-bg: #259d47;
+    --nav-button-disabled-bg: #a5d6a7;
+    --nav-button-disabled-text: #e8f5e9;
+    --feedback-popup-card-bg: #fff;
+    --feedback-popup-text: #222;
+    --feedback-popup-close-hover: #c41c32;
+    --feedback-popup-nav-btn-bg: var(--accent-color);
+    --feedback-popup-nav-btn-hover-bg: var(--accent-color-darker);
+    --feedback-popup-nav-btn-disabled-bg: #d2e5d7;
+    --feedback-popup-nav-btn-disabled-text: #888;
+    --switch-track-bg: #ccc; /* Default track for light mode, e.g. dark mode toggle off */
+    --switch-knob-bg: white;
+    --switch-active-track-bg: var(--accent-color); /* Default active track, e.g. dark mode toggle on */
+    --choice-button-bg: #f0f0f0;
+    --choice-button-text: #333;
+    --choice-button-border: #ccc;
+    --choice-button-hover-bg: #e0e0e0;
+    --choice-button-hover-border: #bbb;
+    --choice-button-selected-bg: var(--accent-color);
+    --choice-button-selected-text: #fff;
+    --choice-button-selected-border: var(--accent-color-darker);
+    --enfant-switch-pink: #ff63b4;
+
+    /* Dark Mode Icon Colors */
+    --icon-sun-color: #f39c12;
+    --icon-moon-color: #f1c40f;
+}
+
+/* --- DARK MODE VARIABLES --- */
+body.dark-mode {
+    --bg-gradient-start: #1a1a1a;
+    --bg-gradient-end: #242424;
+    --text-color-primary: #e0e0e0;
+    --text-color-secondary: #a0a0a0;
+    
+    --accent-color-light: #2a3a2b; /* Darker equivalent for light green backgrounds like default step circle */
+    --accent-text-color: var(--accent-color-bright); /* Brighter green for text on dark backgrounds */
+    
+    --border-color-light: #444;
+    --border-color-medium: #38503a; /* Darker equivalent for stepper progress bar default and step circle border */
+    
+    --card-bg: #2c2c2c;
+    --card-shadow: rgba(0, 0, 0, 0.3); /* Darker shadow for dark mode */
+    
+    --table-header-bg: #333;
+    --table-row-even-bg: #2a2a2a;
+    --table-row-hover-bg: #383838;
+    
+    --progress-line-bg: #333a40;
+    --progress-btn-default-border: #5c6670;
+    --progress-btn-default-text: #a0a0a0;
+    --progress-btn-default-bg: #3a3a3a;
+    --progress-label-default-text: #a0a0a0;
+    
+    --progress-btn-active-bg: #3a3a3a;
+    --progress-btn-active-text: var(--accent-color-bright);
+    --progress-btn-active-border: var(--accent-color);
+    
+    --nav-button-disabled-bg: #3a4f3b;
+    --nav-button-disabled-text: #788a79;
+
+    --feedback-popup-card-bg: #333;
+    --feedback-popup-text: #e0e0e0; /* Text inside popup */
+    --feedback-popup-nav-btn-disabled-bg: #454f48;
+    --feedback-popup-nav-btn-disabled-text: #777;
+
+    --switch-track-bg: #555; /* Default track for dark mode, e.g. dark mode toggle off (not applicable here, but for consistency) */
+    --switch-knob-bg: #bbb; /* Knob color in dark mode */
+    /* --switch-active-track-bg: var(--accent-color); can remain the same or be specific */
+
+    --choice-button-bg: #3a3a3a;
+    --choice-button-text: #e0e0e0;
+    --choice-button-border: #555;
+    --choice-button-hover-bg: #4a4a4a;
+    --choice-button-hover-border: #666;
+    /* --choice-button-selected-bg can remain var(--accent-color) */
+    /* --choice-button-selected-text can remain #fff */
+
+    /* Quiz Popup specific adjustments for dark mode if needed */
+    /* Example: Question text in quiz popup */
+    /* #quizQuestion { color: #f0f0f0; } */
+    /* .quiz-answer-btn { background: #4a5a4a; color: #e0e0e0; border-color: var(--accent-color-darker); } */
+    /* .quiz-answer-btn:hover { background: #5a6a5a; } */
+}
+
+
+body {
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    background: linear-gradient(to bottom, var(--bg-gradient-start), var(--bg-gradient-end) 100%);
+    color: var(--text-color-primary);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: background 0.3s, color 0.3s;
+}
+
+/* --- DARK MODE SWITCH CONTAINER --- */
+#darkModeSwitchContainer {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    z-index: 1001; 
+}
+
+
+#logoEnHautGauche {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    width: 200px;
+    height: auto;
+    z-index: 1000;
+}
+
+/* ----- SWITCH STYLES (generic, applies to both enfant and dark mode switch) ----- */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 54px; 
+    height: 28px;
+}
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: var(--switch-track-bg); /* General default track */
+    transition: .4s;
+    border-radius: 28px;
+}
+.slider:before { /* This is the knob */
+    position: absolute;
+    content: "";
+    height: 20px; width: 20px;
+    left: 4px; bottom: 4px;
+    background-color: var(--switch-knob-bg);
+    transition: .4s;
+    border-radius: 50%;
+    z-index: 2;
+}
+
+/* --- Styles for Mode Enfant Switch (Green Accent) --- */
+/* Container for mode enfant switch for specific alignment if needed */
+#modeEnfantSwitchContainer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    width: 100%;
+    margin-bottom: 8px;
+    gap: 12px;
+}
+
+/* Enfant Mode (Unchecked - Default for this switch) */
+#modeEnfantSwitchContainer .switch input:not(:checked) + .slider {
+    background-color: var(--accent-color); /* Green track for enfant mode */
+}
+#modeEnfantSwitchContainer .switch input:not(:checked) + .slider:before {
+    background-color: var(--accent-color-light); /* Dark green knob */
+    /* transform: translateX(0px); is default */
+}
+
+/* Adulte Mode (Checked for this switch) */
+#modeEnfantSwitchContainer .switch input:checked + .slider {
+    background-color: var(--accent-color-light); /* Light green track for adult mode */
+}
+#modeEnfantSwitchContainer .switch input:checked + .slider:before {
+    transform: translateX(26px);
+    background-color: var(--accent-color-darkest); /* Dark green knob */
+}
+input:checked + .slider {
+    background-color: var(--accent-color);
+}
+input:checked + .slider:before {
+    transform: translateX(26px);
+}
+
+/* --- Styles for Dark Mode Switch --- */
+/* Light Mode (Unchecked - Default for this switch) */
+#darkModeSwitchContainer .switch input:not(:checked) + .slider {
+    background-color: var(--switch-track-bg); /* Uses general variable, e.g., #ccc in light, #555 in dark */
+}
+/* Dark Mode (Checked for this switch) */
+#darkModeSwitchContainer .switch input:checked + .slider {
+    background-color: var(--switch-active-track-bg); /* e.g., var(--accent-color) or a specific dark mode active color */
+}
+#darkModeSwitchContainer .switch input:checked + .slider:before {
+    transform: translateX(26px);
+}
+
+/* General Icon styling within any switch */
+.slider .icon {
+    position: absolute;
+    font-size: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    user-select: none;
+    transition: opacity .4s, color .4s;
+    color: var(--text-color-primary); /* Default icon color based on body text */
+}
+body.dark-mode .slider .icon { /* Ensure icons adapt if their base color needs to change more drastically */
+    color: var(--text-color-primary);
+}
+
+
+/* Icon visibility and color for Mode Enfant Switch */
+#modeEnfantSwitchContainer .slider .adult-icon { left: 7px; }
+#modeEnfantSwitchContainer .slider .child-icon { right: 7px; }
+
+/* Default (Enfant Mode - Unchecked) */
+#modeEnfantSwitchContainer .switch input:not(:checked) + .slider .child-icon {
+    opacity: 1;
+    color: #fff; /* White icon on colored (green) background */
+}
+#modeEnfantSwitchContainer .switch input:not(:checked) + .slider .adult-icon {
+    opacity: 0.35; /* Dimmed adult icon */
+}
+/* Adulte Mode (Checked) */
+#modeEnfantSwitchContainer .switch input:checked + .slider .adult-icon {
+    opacity: 1;
+    color: "var(--accent-color-darkest)"; /* Dark green icon on light green background */
+}
+#modeEnfantSwitchContainer .switch input:checked + .slider .child-icon {
+    opacity: 0.35; /* Dimmed child icon */
+}
+
+/* Icon visibility and color for Dark Mode Switch */
+#darkModeSwitchContainer .slider .sun { left: 6px; }
+#darkModeSwitchContainer .slider .moon { right: 6px; }
+
+/* Default (Light Mode - Unchecked) */
+#darkModeSwitchContainer .switch input:not(:checked) + .slider .sun {
+    opacity: 1;
+    color: var(--icon-sun-color);
+}
+#darkModeSwitchContainer .switch input:not(:checked) + .slider .moon {
+    opacity: 0.5;
+}
+/* Dark Mode (Checked) */
+#darkModeSwitchContainer .switch input:checked + .slider .moon {
+    opacity: 1;
+    color: var(--icon-moon-color);
+}
+#darkModeSwitchContainer .switch input:checked + .slider .sun {
+    opacity: 0.5;
+}
+
+
+/* Mode Enfant Switch text */
+.mode-text {
+    margin-left: 14px;
+    font-size: 1.04em;
+    font-weight: bold;
+    color: var(--accent-color-darkest); /* Default to adult text color, JS changes for enfant */
+    transition: color .2s;
+    letter-spacing: .01em;
+    min-width: 85px;
+    text-align: left;
+}
+
+/* --------- Stepper / étapes --------- */
+.stepper {
+    position: relative;
+    display: flex;
+    justify-content: space-between; /* Distribute space for edge circles */
+    align-items: flex-start;
+    margin: 38px auto 28px auto; /* Centering the stepper */
+    min-height: 90px;
+    width: 100%; 
+    max-width: 700px; 
+    padding: 0 22px; /* Half of circle width to align bar correctly */
+    box-sizing: border-box;
+}
+.step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    /* flex: 1 1 0; -- This can cause issues if not all steps have same width title */
+    /* Instead, rely on justify-content: space-between on .stepper for distribution */
+    z-index: 1;
+}
+.step-circle {
+    width: 44px;
+    height: 44px;
+    background: var(--accent-color-light); 
+    border: 3px solid var(--border-color-medium); 
+    border-radius: 50%;
+    color: var(--accent-text-color); 
+    font-weight: bold;
+    font-size: 1.35em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+    transition: background 0.3s, border-color 0.3s, color 0.3s;
+    margin-bottom: 4px;
+    box-shadow: 0 1px 5px rgba(0,0,0,0.1); /* Use fixed shadow color or var(--card-shadow) */
+}
+.step-circle.active {
+    background: var(--accent-color);
+    border-color: var(--accent-color-darkest);
+    color: #fff;
+}
+.step-title {
+    margin-top: 6px;
+    font-size: 1.07em;
+    color: var(--accent-text-color);
+    text-align: center;
+    width: 90px; /* Ensure titles have enough space or wrap */
+    font-weight: 500;
+    min-height: 24px; /* Allow for two lines if needed */
+    line-height: 1.2;
+}
+.step-progress-bar {
+    position: absolute;
+    top: 18px; /* (circle height 44 / 2) - (bar height 8 / 2) = 22 - 4 = 18px */
+    left: 22px; /* Half of first circle's width */
+    right: 22px; /* Half of last circle's width */
+    height: 8px;
+    background: var(--border-color-medium); /* Base color of the bar track */
+    z-index: 0;
+    border-radius: 6px;
+    transition: background 0.5s ease; /* For the gradient fill */
+}
+
+/* --------- Layout général --------- */
+.tab-content {
+    max-width: 950px;
+    width: 100%;
+    background: var(--card-bg);
+    padding: 30px 22px 30px 22px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px var(--card-shadow); /* Use variable */
+    border: 1px solid var(--border-color-light);
+    margin: 0 auto 36px auto;
+    display: none;
+}
+.tab-content.active {
+    display: block;
+}
+h2 { color: var(--accent-color); font-size: 28px; margin-bottom: 12px; }
+h3 { color: var(--accent-color-darker); font-size: 21px; margin-bottom: 8px; }
+p {
+    font-size: 16px;
+    margin-bottom: 20px;
+    line-height: 1.6;
+    color: var(--text-color-primary);
+}
+ul { margin-left: 24px; margin-bottom: 16px; }
+li { margin-bottom: 9px; }
+
+button,
+input[type="submit"] {
+    padding: 10px 20px;
+    background-color: var(--accent-color);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background 0.3s;
+}
+button:hover,
+input[type="submit"]:hover {
+    background-color: var(--accent-color-darker);
+}
+
+.navigation-buttons {
+    width: 100%;
+    max-width: 950px;
+    display: flex;
+    justify-content: space-between;
+    margin: 26px auto 0 auto;
+    padding: 0 40px; /* Ensure it aligns with content or stepper */
+    box-sizing: border-box;
+}
+.navigation-buttons button {
+    padding: 12px 24px;
+    font-size: 16px;
+    background-color: var(--nav-button-bg); /* Use variable */
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+.navigation-buttons button:hover {
+    background-color: var(--nav-button-hover-bg); /* Use variable */
+}
+/* Add disabled styles if needed */
+.navigation-buttons button:disabled {
+    background-color: var(--nav-button-disabled-bg);
+    color: var(--nav-button-disabled-text);
+    cursor: not-allowed;
+}
+#userInputGroup {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 25px 0 30px 0;
+    width: 100%;
+}
+
+#fields {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: flex-end;
+    gap: 32px;
+    width: 100%;
+}
+
+#feedback1, #tempsSection {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0;
+    margin: 0;
+    background: none;
+    box-shadow: none;
+    border: none;
+    min-width: 0;
+}
+
+#feedback1 label, #tempsSection label {
+    font-weight: 500;
+    margin-bottom: 8px;
+    color: var(--accent-color-darkest);
+    font-size: 1em;
+    text-align: center;
+}
+
+#pseudo, #temps {
+    width: 180px;
+    max-width: 220px;
+    padding: 10px 14px;
+    font-size: 1em;
+    border: 2px solid var(--accent-color-darkest);
+    border-radius: 7px;
+    background: #fff;
+    color: var(--text-color-primary);
+    transition: border 0.16s, box-shadow 0.13s;
+    outline: none;
+    text-align: center;
+    margin-bottom: 0;
+    box-shadow: 0 1px 6px rgba(44,182,84,0.07);
+}
+
+#pseudo:focus, #temps:focus {
+    border-color: var(--accent-color);
+    box-shadow: 0 2px 11px 0 rgba(44,182,84,0.09);
+}
+
+#startButton {
+    display: block;
+    margin: 23px auto 0 auto;
+    width: 180px;
+    border-radius: 7px;
+    font-size: 1em;
+    font-weight: 600;
+    background-color: var(--accent-color);
+    color: #fff;
+    border: none;
+    padding: 12px 0;
+    transition: background 0.17s, box-shadow 0.13s;
+    box-shadow: 0 1px 7px rgba(44,182,84,0.08);
+    cursor: pointer;
+}
+#startButton:hover {
+    background-color: var(--accent-color-darker);
+}
+
+@media (max-width: 650px) {
+    #fields {
+        flex-direction: column;
+        gap: 13px;
+        align-items: center;
+        width: 100%;
+    }
+    #pseudo, #temps, #startButton {
+        width: 96vw;
+        max-width: 96vw;
+    }
+}
+
+.video-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    margin-top: 18px;
+    margin-bottom: 18px;
+}
+video {
+    max-width: 100%;
+    border-radius: 10px;
+    box-shadow: 0 2px 14px rgba(180, 200, 232, 0.12); /* Consider var if this needs dark mode adjustment */
+}
+#transitionScreen {
+    position: fixed;
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex; justify-content: center; align-items: center;
+    color: white; font-size: 22px; font-weight: bold;
+    z-index: 10000; /* High z-index */
+    backdrop-filter: blur(10px);
+    text-align: center;
+    display: none; /* Controlled by JS */
+}
+.petite-image {
+    width: 600px;
+    max-width: 100%; /* Ensure responsiveness */
+    height: auto; /* Maintain aspect ratio */
+    display: block;
+    margin: 0 auto 22px auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    background-color: var(--card-bg); /* Ensure table bg matches card bg in dark mode */
+}
+th, td {
+    border: 1px solid var(--border-color-light);
+    padding: 8px;
+    text-align: left;
+    color: var(--text-color-primary); /* Ensure text color adapts */
+}
+th {
+    background-color: var(--table-header-bg);
+    font-weight: bold;
+}
+.icon-check::before {
+    content: "\2713";
+    color: var(--accent-color-darkest);
+    font-size: 20px;
+}
+.icon-cross::before {
+    content: "\2715";
+    color: #e53e3e; /* This red might need a dark mode variant if too bright */
+    font-size: 20px;
+}
+tr:nth-child(even) {
+    background-color: var(--table-row-even-bg);
+}
+tr:hover {
+    background-color: var(--table-row-hover-bg);
+}
+
+/* --------- Popup quiz --------- */
+.popup-overlay {
+    position: fixed;
+    z-index: 2000;
+    left: 0; top: 0; width: 100vw; height: 100vh;
+    background: rgba(30,40,70,0.67); /* This overlay color might need adjustment for dark mode if it clashes */
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.3s;
+}
+.popup-box {
+    background: var(--feedback-popup-card-bg); /* Use variable */
+    border-radius: 20px;
+    box-shadow: 0 8px 44px 0 rgba(35, 48, 128, 0.16); /* Consider var(--card-shadow) or specific popup shadow */
+    max-width: 380px;
+    width: 95vw;
+    padding: 38px 26px 24px 26px;
+    position: relative;
+    animation: popupFadeIn 0.3s cubic-bezier(.22,.61,.36,1);
+}
+@keyframes popupFadeIn {
+    from { transform: translateY(30px) scale(0.95); opacity: 0;}
+    to { transform: none; opacity: 1;}
+}
+.close-popup { /* This X button is not in the HTML but styles are here */
+    position: absolute;
+    top: 14px;
+    right: 18px;
+    font-size: 2em;
+    background: none;
+    border: none;
+    color: var(--text-color-secondary); /* Use variable */
+    cursor: pointer;
+    font-weight: 900;
+    transition: color 0.2s;
+}
+.close-popup:hover { color: var(--feedback-popup-close-hover); } /* Use variable */
+
+#quizProgress {
+    font-size: 1.1em;
+    color: var(--accent-color); /* Main accent color for progress text */
+    margin-bottom: 18px;
+    text-align: right;
+    letter-spacing: .02em;
+    font-weight: 600;
+}
+#quizQuestion {
+    font-size: 1.18em;
+    font-weight: bold;
+    color: var(--feedback-popup-text); /* Use variable for question text */
+    margin-bottom: 20px;
+}
+#quizAnswers {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+.quiz-answer-btn {
+    border: 2px solid var(--accent-color-darkest);
+    background: linear-gradient(90deg, var(--accent-color-light) 80%, #e7fce7 100%); /* Adjust light green if needed for dark mode */
+    /* Dark mode might need: background: linear-gradient(90deg, #2a3a2b 80%, #202a20 100%); */
+    border-radius: 12px;
+    padding: 15px 8px;
+    font-size: 1.05em;
+    font-weight: 600;
+    color: var(--accent-text-color); /* Use variable for text color on buttons */
+    cursor: pointer;
+    box-shadow: 0 1px 5px rgba(221, 230, 253, 0.05); /* Very light shadow */
+    transition: background .17s, border .16s, transform .1s;
+}
+body.dark-mode .quiz-answer-btn {
+    background: linear-gradient(90deg, rgba(42,58,43,0.7) 80%, rgba(32,42,32,0.7) 100%);
+    color: var(--accent-color-bright);
+    border-color: var(--accent-color);
+}
+
+
+.quiz-answer-btn:hover, .quiz-answer-btn:focus {
+    background: linear-gradient(90deg, #d2fae2 70%, #c7fcdf 100%);
+    /* Dark mode hover: background: linear-gradient(90deg, #3a4a3a 70%, #303f30 100%); */
+    border: 2px solid var(--accent-color);
+    transform: scale(1.025);
+}
+body.dark-mode .quiz-answer-btn:hover, body.dark-mode .quiz-answer-btn:focus {
+    background: linear-gradient(90deg, #3a4a3a 70%, #303f30 100%);
+}
+
+
+.quiz-answer-btn.selected { /* Style for selected answer in quiz */
+    background: var(--accent-color-light); /* Lighter green */
+    border-color: var(--accent-color-darkest);
+    color: var(--accent-color-darkest); /* Darker text for contrast */
+}
+body.dark-mode .quiz-answer-btn.selected {
+    background: var(--accent-color-darker); /* A distinct selected color for dark mode */
+    border-color: var(--accent-color-bright);
+    color: #fff;
+}
+
+
+.quiz-buttons {
+    display: flex; justify-content: flex-start;
+    margin-top: 32px;
+}
+#quizBackBtn {
+    background: #ededed; /* Light gray, might need dark mode var */
+    border: none;
+    border-radius: 8px;
+    color: var(--accent-color-darker);
+    font-weight: bold;
+    font-size: 1em;
+    padding: 11px 20px;
+    cursor: pointer;
+    box-shadow: 0 1px 4px rgba(138, 180, 253, 0.12);
+    transition: background .17s;
+}
+body.dark-mode #quizBackBtn {
+    background: #4a4a4a;
+    color: var(--accent-color-bright);
+}
+
+#quizBackBtn:hover {
+    background: #d6e4f9; /* Light blueish, might need dark mode var */
+}
+body.dark-mode #quizBackBtn:hover {
+    background: #5a5a5a;
+}
+
+#quizSubmitBtn {
+    margin-left: auto;
+    margin-right: 0;
+    background: var(--accent-color);
+    color: #fff;
+    font-weight: bold;
+    border: none;
+    padding: 11px 26px;
+    border-radius: 8px;
+    font-size: 1em;
+    box-shadow: 0 1px 8px rgba(128, 201, 94, 0.13);
+    cursor: pointer;
+    transition: background 0.2s;
+}
+#quizSubmitBtn:hover {
+    background: var(--accent-color-darker);
+}
+#licensedModeSwitchContainer {
+    position: absolute;
+    top: 55px; /* Positionné sous le switch de mode sombre */
+    right: 15px;
+    z-index: 1001;
+    display: flex;
+    align-items: center;
+}
+
+/* Media Queries */
+@media (max-width: 1000px) {
+    .tab-content { padding: 16px 12px 18px 12px; } /* Increased padding slightly */
+    #logoEnHautGauche { width: 120px; top: 5px; left: 5px;}
+    .stepper { padding: 0 10px; } /* Adjust stepper padding */
+    .step-title { font-size: 0.9em; width: 70px; line-height: 1.1; } /* Smaller titles, more space */
+    .step-circle { width: 36px; height: 36px; font-size: 1.1em; border-width: 2px;} /* Slightly larger circles */
+    .step-progress-bar { top: 16px; left: 18px; right: 18px; height: 6px; } /* Adjust bar for new circle size */
+
+    .petite-image { width: 100%; height: auto; }
+}
+@media (max-width: 1000px) and (orientation: landscape) {
+    .popup-box {
+        max-width: 480px;     /* plus large */
+        width: 98vw;
+        max-height: 80vh;     /* plus bas */
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        font-size: 0.90em;    /* police générale plus petite */
+        padding: 20px 8px 12px 8px;
+    }
+    #quizAnswers {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr;
+        gap: 9px 10px;        /* espaces réduits */
+        margin-bottom: 0;
+    }
+    .quiz-answer-btn {
+        padding: 7px 3px;         /* moins de padding */
+        font-size: 0.97em;        /* police plus petite */
+        min-width: 0;
+        min-height: 33px;         /* boutons moins hauts */
+        line-height: 1.1;
+        word-break: break-word;
+        white-space: normal;
+        text-align: center;
+    }
+    #quizQuestion {
+        font-size: 0.97em;
+        margin-bottom: 7px;
+        text-align: center;
+    }
+    .quiz-buttons {
+        margin-top: 10px;     /* espace réduit */
+        flex-direction: row;
+        justify-content: space-between;
+    }
+}
+
+
+@media (max-width: 700px) {
+    .navigation-buttons { padding: 0 15px;} /* Slightly more padding */
+    .navigation-buttons button { padding: 10px 16px; font-size: 14px; } /* More padding for buttons */
+    .stepper { margin-top: 28px; margin-bottom: 20px; min-height: 70px;}
+    .step-title { font-size: 0.85em; width: 60px; }
+    .step-circle { width: 32px; height: 32px; font-size: 1em;}
+    .step-progress-bar { top: 14px; left: 16px; right: 16px;}
+}
+@media (max-width: 540px) {
+    body { font-size: 15px; } /* Base font size adjustment */
+    .tab-content { padding: 15px 8px; }
+    h2 { font-size: 20px; }
+    h3 { font-size: 18px; }
+    .stepper { justify-content: space-around; } /* Change justification for very small screens if titles overlap */
+    .step-title { width: 50px; font-size: 0.8em; } /* Even smaller titles */
+    .navigation-buttons button { padding: 8px 10px; font-size: 13px; }
+    #modeEnfantSwitchContainer { gap: 8px; }
+    .mode-text { font-size: 0.9em; min-width: 70px; margin-left: 8px; }
+    #quizPopup { padding: 20px 15px 15px 15px; }
+    #quizQuestion { font-size: 1.1em; }
+    .quiz-answer-btn { font-size: 0.95em; padding: 12px 6px; }
+
+}

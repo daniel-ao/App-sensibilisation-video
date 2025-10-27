@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analyse de votre Session</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/resultats.css">
+    <script src="../chart.umd.js"></script>
+</head>
+<body>
+
+    <header class="page-header">
+        <h1>Analyse de votre Session</h1>
+        <p>Bravo <strong id="userPseudo"></strong> ! Voici un résumé de vos performances et ressentis.</p>
+        <div id="miniCardRow">
+            <div class="mini-card">
+            <span class="mini-card-icon">🏆</span>
+                <span class="mini-card-title">Score Total</span>
+                <span class="mini-card-value">
+                    <span id="userScore">-</span> pts
+                    <span class="session-gain" id="sessionScoreGain"></span>
+                </span>
+            </div>
+            <div class="mini-card">
+                <span class="mini-card-icon">⏱️</span>
+                <span class="mini-card-title">Temps Passé</span>
+                <span class="mini-card-value" id="userTime">-</span>
+            </div>
+            <div class="mini-card">
+                <span class="mini-card-icon">🌟</span>
+                <span class="mini-card-title">Votre Niveau</span>
+                <span class="mini-card-value level" id="levelText">-</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-content">
+
+        <section class="stats-section" id="recapBlock">
+            <h2>Récapitulatif Détaillé de la Session</h2>
+            <div class="precision-summary">
+                <div id="precisionSession"></div>
+                <div id="precisionGlobale"></div>
+                <div id="precisionGlobaleMoyenne"></div>
+            </div>
+            <div id="userResults" class="recap-grid"></div>
+        </section>
+        
+
+
+        <section class="stats-section" id="personalCharts">
+            <h2>Vos Statistiques Personnelles</h2>
+            <div class="canvas-row">
+                <details open class="chart-wrapper">
+                    <summary><h3>Votre Satisfaction Cumulée</h3></summary>
+                    <div class="chart-canvas-container"><canvas id="chartSatisfactionCumul"></canvas></div>
+                </details>
+                <details open class="chart-wrapper">
+                    <summary><h3>Vos Confusions de Résolution</h3></summary>
+                    <div class="chart-canvas-container"><canvas id="chartConfusions"></canvas></div>
+                </details>
+            </div>
+            <details open class="chart-wrapper">
+                <summary><h3>Votre Satisfaction par Appareil</h3></summary>
+                <div id="satisfactionByDeviceChartsContainer"></div>
+            </details>
+        </section>
+
+        <section class="stats-section" id="globalCharts">
+            <h2>🌍 Tendances Globales (Tous les utilisateurs)</h2>
+            <div class="canvas-row">
+                <details open class="chart-wrapper">
+                    <summary><h3>Satisfaction Globale Cumulée</h3></summary>
+                    <div class="chart-canvas-container"><canvas id="globalChartSatisfactionCumul"></canvas></div>
+                </details>
+                <details open class="chart-wrapper">
+                    <summary><h3>Confusions Globales</h3></summary>
+                    <div class="chart-canvas-container"><canvas id="globalChartConfusions"></canvas></div>
+                </details>
+            </div>
+            <details open class="chart-wrapper">
+                <summary><h3>Satisfaction Globale par Appareil</h3></summary>
+                <div id="globalSatisfactionByDeviceChartsContainer"></div>
+            </details>
+            <details open class="chart-wrapper">
+                 <summary><h3>Analyse Détaillée de la Satisfaction par Appareil</h3></summary>
+                 <div id="satisfactionByCategoryAndDeviceContainer"></div>
+            </details>
+            <details open class="chart-wrapper">
+                <summary>
+                    <h3>Comparaison Directe de la Satisfaction par Paire</h3>
+                    <p class="chart-subtitle">Répartition des avis lorsque deux résolutions sont comparées.</p>
+                </summary>
+                <div class="chart-canvas-container">
+                    <canvas id="chartPairedSatisfaction"></canvas>
+                </div>
+            </details>
+        </section>
+
+        <section class="stats-section" id="categoryCharts">
+            <h2>🔬 Analyse par Catégorie de Contenu (Global)</h2>
+            <div class="canvas-row">
+                <details open class="chart-wrapper">
+                    <summary><h3>Distribution de la Satisfaction par Catégorie</h3></summary>
+                    <div class="chart-canvas-container"><canvas id="chartSatisfactionByCategory"></canvas></div>
+                </details>
+                <details open class="chart-wrapper">
+                    <summary><h3>Erreur de Perception par Catégorie</h3></summary>
+                    <div class="chart-canvas-container"><canvas id="chartPerceptionErrorByCategory"></canvas></div>
+                </details>
+            </div>
+        </section>
+
+    </main>
+    
+    <section class="main-content">
+        <div class="stats-section" id="videoComparisonSection">
+            <h2>Comparez les Vidéos de votre Session</h2>
+            <!-- Le contenu sera généré dynamiquement par JavaScript -->
+        </div>
+    </section>
+
+    <footer class="page-footer">
+        <button id="backButton" class="btn-retour" onclick="window.location.href='../index.html'">Retour à l’accueil</button>
+    </footer>
+    
+    <script src="../assets/js/config.js"></script>
+    <script src="../assets/js/api.js"></script>
+    <script src="../assets/js/Resultats/analysis.js"></script>
+    <script src="../assets/js/Resultats/ui.js"></script>
+    <script src="../assets/js/Resultats/graphique.js"></script>
+    <script src="../assets/js/Resultats/main.js"></script>
+</body>
+</html>
