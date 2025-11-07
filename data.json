@@ -27,7 +27,8 @@
     "fdfdsfsdfsdfsdfsdf": 4,
     "lolosqofksdf": 2,
     "amir": 2,
-    "daniel": 0
+    "daniel": 0,
+    "dan": 2
   },
   "times": {
     "e": 63,
@@ -57,7 +58,8 @@
     "fdfdsfsdfsdfsdfsdf": 18,
     "lolosqofksdf": 21,
     "amir": 49,
-    "daniel": 18
+    "daniel": 18,
+    "dan": 14
   },
   "precisions": {
     "e": {
@@ -167,6 +169,10 @@
     "daniel": {
       "moyenne": 25,
       "sessions": 6
+    },
+    "dan": {
+      "moyenne": 0,
+      "sessions": 1
     }
   }
 }
