@@ -4,6 +4,7 @@ const jsonHandler = require('../data/jsonHandler');
 const csvHandler = require('../data/csvHandler');
 const videoService = require('../services/videoService');
 const statsService = require('../services/statsService');
+const dbService = require('../services/dbService');
 
 // --- Routes Vidéos ---
 router.get('/api/get-videos', (req, res) => {
@@ -187,6 +188,62 @@ router.post('/registerPseudo', (req, res) => {
 });
 router.get('/lastPseudo', (req, res) => {
     res.json({ pseudo: req.cookies.userPseudo || lastPseudo });
+});
+
+// --- Routes Base de Données (exploration) ---
+router.get('/api/db/summary', (req, res) => {
+    try {
+        res.json(dbService.getSummary());
+    } catch (e) {
+        console.error('Erreur /api/db/summary', e);
+        res.status(500).json({ message: 'Erreur interne.' });
+    }
+});
+router.get('/api/db/sessions', (req, res) => {
+    const { q = '', limit = '50', offset = '0', startDate = '', endDate = '', resolution = '', sortBy = '', sortDir = '' } = req.query;
+    const lim = Math.min(Math.max(parseInt(limit, 10) || 50, 1), 200);
+    const off = Math.max(parseInt(offset, 10) || 0, 0);
+    try {
+        const data = dbService.getSessions({ q, limit: lim, offset: off, startDate, endDate, resolution, sortBy, sortDir });
+        res.json({ query: q, limit: lim, offset: off, startDate, endDate, resolution, sortBy, sortDir, total: data.total, rows: data.rows });
+    } catch (e) {
+        console.error('Erreur /api/db/sessions', e);
+        res.status(500).json({ message: 'Erreur interne.' });
+    }
+});
+router.get('/api/db/users', (req, res) => {
+    const { q = '', limit = '50', offset = '0' } = req.query;
+    const lim = Math.min(Math.max(parseInt(limit, 10) || 50, 1), 200);
+    const off = Math.max(parseInt(offset, 10) || 0, 0);
+    try {
+        const data = dbService.getUsers({ q, limit: lim, offset: off });
+        res.json({ query: q, limit: lim, offset: off, total: data.total, rows: data.rows });
+    } catch (e) {
+        console.error('Erreur /api/db/users', e);
+        res.status(500).json({ message: 'Erreur interne.' });
+    }
+});
+
+router.get('/api/db/resolutions', (req, res) => {
+    try {
+        res.json({ resolutions: dbService.getResolutions() });
+    } catch (e) {
+        console.error('Erreur /api/db/resolutions', e);
+        res.status(500).json({ message: 'Erreur interne.' });
+    }
+});
+
+router.get('/api/db/session/:id', (req, res) => {
+    try {
+        const id = parseInt(req.params.id, 10);
+        if (Number.isNaN(id)) return res.status(400).json({ message: 'ID invalide' });
+        const row = dbService.getSessionById(id);
+        if (!row) return res.status(404).json({ message: 'Session non trouvée' });
+        res.json(row);
+    } catch (e) {
+        console.error('Erreur /api/db/session/:id', e);
+        res.status(500).json({ message: 'Erreur interne.' });
+    }
 });
 
 module.exports = router;

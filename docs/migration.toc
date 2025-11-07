@@ -12,5 +12,16 @@
 \contentsline {paragraph}{users}{3}{section*.3}%
 \contentsline {subsection}{\numberline {4.4}Pragmas}{3}{subsection.4.4}%
 \contentsline {subsection}{\numberline {4.5}Verification}{3}{subsection.4.5}%
-\contentsline {section}{\numberline {5}Change Log}{3}{section.5}%
-\contentsline {section}{\numberline {6}How to Reproduce Current DB State}{4}{section.6}%
+\contentsline {section}{\numberline {5}Step 3: Data Migration (Completed)}{3}{section.5}%
+\contentsline {subsection}{\numberline {5.1}Objective}{3}{subsection.5.1}%
+\contentsline {subsection}{\numberline {5.2}Artifacts Created}{4}{subsection.5.2}%
+\contentsline {subsection}{\numberline {5.3}What the script does}{4}{subsection.5.3}%
+\contentsline {subsection}{\numberline {5.4}Field mapping}{4}{subsection.5.4}%
+\contentsline {paragraph}{CSV (sessions)}{4}{section*.4}%
+\contentsline {paragraph}{JSON (users)}{4}{section*.5}%
+\contentsline {subsection}{\numberline {5.5}How we ran it}{4}{subsection.5.5}%
+\contentsline {subsection}{\numberline {5.6}Verification}{5}{subsection.5.6}%
+\contentsline {subsection}{\numberline {5.7}Idempotency and safety}{5}{subsection.5.7}%
+\contentsline {section}{\numberline {6}Change Log}{5}{section.6}%
+\contentsline {section}{\numberline {7}How to Reproduce Current DB State}{5}{section.7}%
+\contentsline {paragraph}{Populate from existing CSV/JSON (optional)}{5}{section*.6}%

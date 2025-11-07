@@ -10,3 +10,8 @@ build/
 node_modules/
 .cache/
 *.log
+
+# SQLite runtime/journal files (should not be committed)
+db/*.db-shm
+db/*.db-wal
+db/*.db-journal

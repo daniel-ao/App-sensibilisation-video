@@ -161,6 +161,189 @@ body {
     background: var(--nav-button-hover-bg);
 }
 
+/* --- DB Browser Modal --- */
+.db-browser-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+}
+.db-browser-modal {
+    width: min(1000px, 94vw);
+    max-height: 86vh;
+    background: var(--card-bg);
+    color: var(--text-color-primary);
+    border-radius: 12px;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.25);
+    border: 1px solid var(--border-color-light);
+    display: flex;
+    flex-direction: column;
+}
+.db-browser-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--border-color-light);
+}
+.db-close-btn {
+    background: transparent;
+    color: var(--text-color-primary);
+    border: none;
+    font-size: 24px;
+    line-height: 1;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 6px;
+}
+.db-close-btn:hover { background: var(--table-row-hover-bg); }
+.db-summary-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+    padding: 14px 18px 0 18px;
+}
+.db-card {
+    background: var(--table-row-even-bg);
+    border: 1px solid var(--border-color-light);
+    border-radius: 10px;
+    padding: 12px 14px;
+}
+.db-card .db-card-title { font-size: 0.9em; color: var(--text-color-secondary); }
+.db-card .db-card-value { font-size: 1.3em; font-weight: 700; }
+
+.db-browser-tabs {
+    display: flex;
+    gap: 8px;
+    padding: 12px 18px 0 18px;
+}
+.db-tab {
+    background: var(--progress-btn-default-bg);
+    color: var(--progress-btn-default-text);
+    border: 1px solid var(--progress-btn-default-border);
+    border-radius: 8px;
+    padding: 8px 12px;
+    cursor: pointer;
+}
+.db-tab.active {
+    background: var(--progress-btn-active-bg);
+    color: var(--progress-btn-active-text);
+    border-color: var(--progress-btn-active-border);
+    box-shadow: 0 2px 10px var(--progress-btn-active-shadow);
+}
+
+.db-browser-toolbar {
+    display: flex;
+    gap: 10px;
+    padding: 12px 18px;
+    border-top: 1px solid var(--border-color-light);
+    align-items: center; /* keep controls vertically centered */
+}
+.db-browser-toolbar input[type="text"] {
+    flex: 1;
+    padding: 8px 10px;
+    border: 1px solid var(--border-color-light);
+    border-radius: 8px;
+    background: var(--card-bg);
+    color: var(--text-color-primary);
+}
+.db-browser-toolbar input[type="date"],
+.db-browser-toolbar select {
+    padding: 8px 10px;
+    border: 1px solid var(--border-color-light);
+    border-radius: 8px;
+    background: var(--card-bg);
+    color: var(--text-color-primary);
+}
+
+/* Make toolbar buttons match input height and align nicely */
+.db-browser-toolbar .small-button {
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 12px;
+    height: 38px; /* closely matches input/select height */
+    line-height: 1; /* avoid extra vertical expansion */
+    box-shadow: 0 2px 6px rgba(0,0,0,0.12); /* subtler so it doesn't look like it overflows */
+}
+
+.db-browser-content {
+    padding: 0 18px 18px 18px;
+    overflow: auto;
+}
+.db-results-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+.db-results-table thead th {
+    position: sticky;
+    top: 0;
+    background: var(--table-header-bg);
+    color: var(--text-color-primary);
+    border-bottom: 1px solid var(--border-color-light);
+    padding: 8px 6px;
+    text-align: left;
+    z-index: 1;
+}
+.db-results-table tbody td {
+    padding: 8px 6px;
+    border-bottom: 1px solid var(--border-color-light);
+}
+.db-results-table tbody tr:nth-child(even) { background: var(--table-row-even-bg); }
+.db-results-table tbody tr:hover { background: var(--table-row-hover-bg); }
+.db-results-table tbody tr { cursor: pointer; }
+
+.db-pagination {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-top: 12px;
+}
+.db-pagination button {
+    background: var(--progress-btn-default-bg);
+    color: var(--progress-btn-default-text);
+    border: 1px solid var(--progress-btn-default-border);
+    border-radius: 6px;
+    padding: 6px 10px;
+    cursor: pointer;
+}
+.db-pagination .current-page { color: var(--progress-btn-active-text); font-weight: 600; }
+
+/* Detail side panel */
+.db-browser-modal { position: relative; }
+.db-detail-panel {
+    position: absolute;
+    top: 0;
+    right: 0;
+    height: 100%;
+    width: min(380px, 85vw);
+    background: var(--card-bg);
+    color: var(--text-color-primary);
+    border-left: 1px solid var(--border-color-light);
+    box-shadow: -8px 0 20px rgba(0,0,0,0.18);
+    transform: translateX(100%);
+    transition: transform .25s ease;
+    display: flex;
+    flex-direction: column;
+    z-index: 3001; /* ensure above table and other content inside modal */
+    /* When closed (off-canvas), don't intercept clicks */
+    pointer-events: none;
+}
+.db-detail-panel.open { transform: translateX(0); pointer-events: auto; }
+.db-detail-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border-color-light);
+}
+.db-detail-content { padding: 12px 14px; overflow: auto; }
+.db-detail-content .kv { display: grid; grid-template-columns: 150px 1fr; gap: 6px 10px; }
+.db-detail-content .kv .k { color: var(--text-color-secondary); }
+.db-detail-content .kv .v { word-break: break-word; }
+
 
 #logoEnHautGauche {
     position: absolute;

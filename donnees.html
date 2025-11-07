@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>Explorateur de Données</title>
+  <link rel="stylesheet" href="assets/css/index.css" />
+  <style>
+    body { padding: 16px; }
+    .standalone-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
+    .standalone-header h1 { margin:0; font-size:1.6em; }
+    .back-link { text-decoration:none; padding:8px 14px; border-radius:8px; background:var(--nav-button-bg); color:#fff; font-weight:600; }
+    .back-link:hover { background:var(--nav-button-hover-bg); }
+    /* Override modal overlay specific layout to make content flow */
+    .db-browser-overlay, #dbBrowserOverlay { display:none !important; }
+    .page-db-container { max-width:1180px; margin:0 auto; }
+    .db-browser-modal { position:static; max-height:none; width:100%; box-shadow:0 4px 18px rgba(0,0,0,0.12); }
+  </style>
+</head>
+<body>
+  <div class="standalone-header">
+    <h1>Explorateur de Données</h1>
+    <a class="back-link" href="index.html">← Retour</a>
+  </div>
+  <div class="page-db-container">
+    <div class="db-browser-modal">
+      <div class="db-browser-header">
+        <h3>Explorateur de Données</h3>
+        <!-- No global close button in standalone mode -->
+      </div>
+      <div id="dbSummaryCards" class="db-summary-cards"></div>
+      <div class="db-browser-tabs">
+        <button class="db-tab active" data-tab="sessions">Sessions</button>
+        <button class="db-tab" data-tab="users">Utilisateurs</button>
+      </div>
+      <div class="db-browser-toolbar">
+        <input type="text" id="dbSearchInput" placeholder="Recherche (pseudo, vidéo, résolution...)" />
+        <input type="date" id="dbStartDate" title="Date de début" />
+        <input type="date" id="dbEndDate" title="Date de fin" />
+        <select id="dbResolutionSelect" title="Résolution">
+          <option value="">Toutes résolutions</option>
+        </select>
+        <button id="dbSearchBtn" class="small-button">Appliquer</button>
+        <button id="dbClearFiltersBtn" class="small-button" title="Réinitialiser les filtres">Réinitialiser</button>
+        <button id="dbExportBtn" class="small-button" title="Exporter la vue en CSV">Exporter CSV</button>
+      </div>
+      <div class="db-browser-content">
+        <table id="dbResultsTable" class="db-results-table">
+          <thead id="dbResultsHead"></thead>
+          <tbody id="dbResultsBody"></tbody>
+        </table>
+        <div id="dbPagination" class="db-pagination"></div>
+      </div>
+      <div id="dbDetailPanel" class="db-detail-panel" aria-hidden="true">
+        <div class="db-detail-header">
+          <h4>Détail de la session</h4>
+          <button id="dbDetailCloseBtn" type="button" class="db-close-btn" aria-label="Fermer">×</button>
+        </div>
+        <div id="dbDetailContent" class="db-detail-content"></div>
+      </div>
+    </div>
+  </div>
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/api.js"></script>
+  <script src="assets/js/Index/databaseBrowser.js"></script>
+</body>
+</html>

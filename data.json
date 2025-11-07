@@ -28,7 +28,9 @@
     "lolosqofksdf": 2,
     "amir": 2,
     "daniel": 0,
-    "dan": 2
+    "dan": 2,
+    "test1": 3,
+    "test2": 3
   },
   "times": {
     "e": 63,
@@ -59,7 +61,9 @@
     "lolosqofksdf": 21,
     "amir": 49,
     "daniel": 18,
-    "dan": 14
+    "dan": 14,
+    "test1": 11,
+    "test2": 12
   },
   "precisions": {
     "e": {
@@ -172,6 +176,14 @@
     },
     "dan": {
       "moyenne": 0,
+      "sessions": 1
+    },
+    "test1": {
+      "moyenne": 0,
+      "sessions": 1
+    },
+    "test2": {
+      "moyenne": 50,
       "sessions": 1
     }
   }
