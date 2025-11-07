@@ -111,10 +111,81 @@ PRAGMA foreign_keys = ON;
 \subsection{Verification}
 Execution output confirmed creation of tables: \texttt{sessions}, \texttt{users}, plus \texttt{sqlite\_sequence} (auto-increment bookkeeping).
 
+\section{Step 3: Data Migration (Completed)}
+\subsection{Objective}
+Preserve historical data by importing existing flat files into the new SQLite schema.
+
+\subsection{Artifacts Created}
+\begin{itemize}[noitemsep]
+  \item Script: \texttt{db/migrate-data.js} (one-time migrator).
+  \item Backups: \texttt{backups/data.csv.bak}, \texttt{backups/data.json.bak}.
+  \item NPM command: \texttt{migrate:data} to run the migrator.
+\end{itemize}
+
+\subsection{What the script does}
+\begin{itemize}[noitemsep]
+  \item Reads \texttt{data.csv} and maps each row to the \texttt{sessions} table.
+  \item Reads \texttt{data.json} and aggregates per-user totals into \texttt{users}.
+  \item Wraps inserts in a single transaction; enables WAL and sets \texttt{synchronous=NORMAL} for faster batch writes.
+  \item Supports a dry run via \texttt{DRY\_RUN=1} to validate counts without writing.
+  \item Uses an UPSERT for users so the script can be re-run safely without duplicating rows.
+\end{itemize}
+
+\subsection{Field mapping}
+\paragraph{CSV (sessions)} The following columns are mapped 1:1 from the CSV header to the table columns:
+\begin{lstlisting}[language=,breaklines=true]
+user, category1, videoName1, videoPath1, resolution1,
+category2, videoName2, videoPath2, resolution2,
+QO1, QO2, QO3, QO4, QO5,
+comments, screenType, timestamp
+\end{lstlisting}
+If a field is missing in a row, it is inserted as NULL (except \texttt{user} and \texttt{timestamp}, which default to 'unknown' and current ISO time respectively).
+
+\paragraph{JSON (users)} The source file combines three objects: \texttt{scores}, \texttt{times}, and \texttt{precisions}. The script builds one record per pseudo as:
+\begin{lstlisting}[language=,breaklines=true]
+pseudo, totalScore <- scores[pseudo]
+        totalTime  <- times[pseudo]
+        sessionCount <- precisions[pseudo].sessions
+\end{lstlisting}
+Missing values default to 0. The users table is updated with an UPSERT so totals reflect the JSON content exactly.
+
+\subsection{How we ran it}
+Backups were created first and then the migration was executed:
+\begin{lstlisting}[language=,breaklines=true]
+mkdir -p backups
+cp data.csv backups/data.csv.bak
+cp data.json backups/data.json.bak
+
+# Preview (no writes)
+DRY_RUN=1 npm run migrate:data
+
+# Execute migration
+npm run migrate:data
+\end{lstlisting}
+
+\subsection{Verification}
+After the run, we verified row counts using Node with \texttt{better-sqlite3}:
+\begin{lstlisting}[language=,breaklines=true]
+node -e "const Database=require('better-sqlite3');\
+const db=new Database('db/database.db');\
+console.log('sessions:',db.prepare('SELECT COUNT(*) AS c FROM sessions').get().c);\
+console.log('users:',db.prepare('SELECT COUNT(*) AS c FROM users').get().c);\
+db.close();"
+\end{lstlisting}
+Observed on this run: \textbf{116} sessions and \textbf{29} users.
+
+\subsection{Idempotency and safety}
+\begin{itemize}[noitemsep]
+  \item \textbf{Users}: UPSERT ensures re-running sets totals to JSON values rather than duplicating.
+  \item \textbf{Sessions}: Designed for one-time import; re-running would re-insert sessions. Avoid re-running or add a guard file if needed.
+  \item \textbf{Dry run}: Use \texttt{DRY\_RUN=1} to validate counts before writing.
+\end{itemize}
+
 \section{Change Log}
 \begin{description}[leftmargin=1.2cm,style=nextline]
   \item[Step 1] Added dependency \texttt{better-sqlite3}. (No code paths yet updated.)
   \item[Step 2] Created schema initialization script; introduced \texttt{sessions} and \texttt{users} tables; added npm script \texttt{db:init}.
+  \item[Step 3] Migrated historical data with \texttt{db/migrate-data.js}; added npm script \texttt{migrate:data}. Verified counts match sources.
 \end{description}
 
 \section{How to Reproduce Current DB State}
@@ -124,6 +195,17 @@ npm install
 npm run db:init
 \end{lstlisting}
 This will (re)create the database with the current schema.
+
+\paragraph{Populate from existing CSV/JSON (optional)}
+Run the one-time migration to import current \texttt{data.csv} and \texttt{data.json}:
+\begin{lstlisting}[language=,breaklines=true]
+# Dry run (no writes):
+DRY_RUN=1 npm run migrate:data
+
+# Execute migration:
+npm run migrate:data
+\end{lstlisting}
+Afterwards, the database contains the historical sessions and users aggregates.
 
 \vfill
 \begin{center}\textit{This document will be updated after each subsequent migration task.}\end{center}

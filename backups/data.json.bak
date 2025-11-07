@@ -1,0 +1,178 @@
+{
+  "scores": {
+    "e": 13,
+    "Amir": 1,
+    "Jojo": 8,
+    "Fred": 4,
+    "mdr": 13,
+    "df": 10,
+    "dd": 12,
+    "As": 0,
+    "lol": 10,
+    "Dj": 7,
+    "azz": 4,
+    "stp": 2,
+    "zzzz": 5,
+    "zzz": 1,
+    "ertet": 2,
+    "sdfsdf": 1,
+    "a": 4,
+    "dsfdsfsdfsdfsdfsdfsdf": 0,
+    "Saa": 4,
+    "ndg": 14,
+    "hte": 4,
+    "s": 2,
+    "ddf": 2,
+    "fdf": 5,
+    "fdfdsfsdfsdfsdfsdf": 4,
+    "lolosqofksdf": 2,
+    "amir": 2,
+    "daniel": 0,
+    "dan": 2
+  },
+  "times": {
+    "e": 63,
+    "Amir": 19,
+    "Jojo": 16,
+    "Fred": 92,
+    "mdr": 14,
+    "df": 40,
+    "dd": 52,
+    "As": 58,
+    "lol": 45,
+    "Dj": 49,
+    "azz": 35,
+    "stp": 133,
+    "zzzz": 52,
+    "zzz": 15,
+    "ertet": 14,
+    "sdfsdf": 126,
+    "a": 42,
+    "dsfdsfsdfsdfsdfsdfsdf": 25,
+    "Saa": 46,
+    "ndg": 86,
+    "hte": 30,
+    "s": 14,
+    "ddf": 27,
+    "fdf": 12,
+    "fdfdsfsdfsdfsdfsdf": 18,
+    "lolosqofksdf": 21,
+    "amir": 49,
+    "daniel": 18,
+    "dan": 14
+  },
+  "precisions": {
+    "e": {
+      "moyenne": 50,
+      "sessions": 3
+    },
+    "Amir": {
+      "moyenne": 37.387387387387385,
+      "sessions": 111
+    },
+    "Jojo": {
+      "moyenne": 25,
+      "sessions": 16
+    },
+    "Fred": {
+      "moyenne": 25,
+      "sessions": 2
+    },
+    "mdr": {
+      "moyenne": 50,
+      "sessions": 2
+    },
+    "dd": {
+      "moyenne": 50,
+      "sessions": 2
+    },
+    "As": {
+      "moyenne": 0,
+      "sessions": 2
+    },
+    "lol": {
+      "moyenne": 41.666666666666664,
+      "sessions": 6
+    },
+    "Dj": {
+      "moyenne": 75,
+      "sessions": 2
+    },
+    "azz": {
+      "moyenne": 25,
+      "sessions": 2
+    },
+    "stp": {
+      "moyenne": 0,
+      "sessions": 2
+    },
+    "zzzz": {
+      "moyenne": 50,
+      "sessions": 2
+    },
+    "zzz": {
+      "moyenne": 0,
+      "sessions": 1
+    },
+    "ertet": {
+      "moyenne": 0,
+      "sessions": 1
+    },
+    "sdfsdf": {
+      "moyenne": 0,
+      "sessions": 1
+    },
+    "a": {
+      "moyenne": 100,
+      "sessions": 1
+    },
+    "dsfdsfsdfsdfsdfsdfsdf": {
+      "moyenne": 0,
+      "sessions": 1
+    },
+    "Saa": {
+      "moyenne": 16.666666666666668,
+      "sessions": 3
+    },
+    "ndg": {
+      "moyenne": 40,
+      "sessions": 5
+    },
+    "hte": {
+      "moyenne": 0,
+      "sessions": 2
+    },
+    "s": {
+      "moyenne": 50,
+      "sessions": 1
+    },
+    "ddf": {
+      "moyenne": 0,
+      "sessions": 1
+    },
+    "fdf": {
+      "moyenne": 75,
+      "sessions": 2
+    },
+    "fdfdsfsdfsdfsdfsdf": {
+      "moyenne": 50,
+      "sessions": 2
+    },
+    "lolosqofksdf": {
+      "moyenne": 0,
+      "sessions": 1
+    },
+    "amir": {
+      "moyenne": 0,
+      "sessions": 1
+    },
+    "daniel": {
+      "moyenne": 25,
+      "sessions": 6
+    },
+    "dan": {
+      "moyenne": 0,
+      "sessions": 1
+    }
+  }
+}
