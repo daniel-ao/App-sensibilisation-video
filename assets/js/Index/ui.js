@@ -212,4 +212,11 @@ function initUI() {
     initEnfantModeSwitch();
     initLicensedModeSwitch();
     initPseudoHandling();
+    // New: extras page button
+    const extrasBtn = document.getElementById('openExtrasButton');
+    if (extrasBtn) {
+        extrasBtn.addEventListener('click', () => {
+            window.location.href = 'extras.html';
+        });
+    }
 }

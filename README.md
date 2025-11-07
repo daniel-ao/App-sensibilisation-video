@@ -5,7 +5,7 @@ Ce projet est une application web permettant de tester la qualité de visionnage
 ## 🚀 Lancer le projet
 
 1. Ouvre un terminal à la racine du projet.
-2. Exécute le fichier `main.js` avec Node.js :
+2. Lance le serveur Express :
 
 ```bash
-node main.js
+node server/main.js

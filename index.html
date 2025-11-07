@@ -17,6 +17,11 @@
         </label>
     </div>
 
+    <!-- New: standalone container placed next to dark mode (absolute top-right offset) -->
+    <div id="extrasButtonContainer">
+        <button id="openExtrasButton" class="small-button" title="Ouvrir l'espace atelier">Espace Atelier</button>
+    </div>
+
     <div class="switch-container" id="licensedModeSwitchContainer" style="top: 55px;">
         <label class="switch">
             <input type="checkbox" id="licensedModeToggle">
@@ -192,6 +197,12 @@
                     <p id="transitionText" style="color: white;"></p>
                 </div>
             </div>
+
+            <!-- Statistiques de satisfaction pour la vidéo en cours -->
+            <section class="stats-section" style="margin-top: 16px;">
+                <h2 style="margin-top:0;">Statistiques de satisfaction pour cette vidéo</h2>
+                <div id="satisfaction-container-player" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 1rem; width:100%; margin-top:1rem;"></div>
+            </section>
         </section>
     </div>
 
@@ -257,11 +268,17 @@
     </div>
 
     <!-- Scripts réorganisés et chargés dans le bon ordre -->
+    <script src="chart.umd.js"></script>
     <script src="assets/js/config.js"></script>
-    <script src="assets/js/api.js"></script> 
-    <script src="assets/js/index/ui.js"></script>
-    <script src="assets/js/index/player.js"></script>
-    <script src="assets/js/index/quiz.js"></script>
-    <script src="assets/js/index/main.js"></script>
+    <script src="assets/js/api.js"></script>
+    <!-- Réutilisation des helpers graphiques de la page résultats -->
+    <script src="assets/js/Resultats/graphique.js"></script>
+    <!-- Nouveau: rendu des stats sous le lecteur vidéo -->
+    <script src="assets/js/Index/stats.js"></script>
+    <!-- Attention: dossiers sensibles à la casse sur Linux (Index, pas index) -->
+    <script src="assets/js/Index/ui.js"></script>
+    <script src="assets/js/Index/player.js"></script>
+    <script src="assets/js/Index/quiz.js"></script>
+    <script src="assets/js/Index/main.js"></script>
 </body>
 </html>

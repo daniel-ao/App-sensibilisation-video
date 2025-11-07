@@ -17,8 +17,8 @@ function createChart(canvas, type, data, options) {
     if (!canvas) return;
     const existingChart = Chart.getChart(canvas);
     if (existingChart) existingChart.destroy();
-    
-    new Chart(canvas, {
+
+    const chart = new Chart(canvas, {
         type,
         data,
         options: {
@@ -27,6 +27,114 @@ function createChart(canvas, type, data, options) {
             ...options
         }
     });
+
+    try {
+        attachEnlargeButtonToCanvas(canvas, options?.plugins?.title?.text || 'Graphique');
+    } catch (e) {
+        console.warn('Impossible d\'attacher le bouton d\'agrandissement:', e);
+    }
+}
+
+function attachEnlargeButtonToCanvas(canvas, titleText) {
+    // Find a suitable wrapper to host a floating button (no layout shift)
+    const wrapper = canvas.closest('.chart-canvas-container, .dynamic-chart-wrapper, .video-chart-wrapper') || canvas.parentElement;
+    if (!wrapper) return;
+
+    // Avoid duplicates
+    if (wrapper.querySelector('.chart-enlarge-btn-floating')) return;
+
+    // Ensure wrapper can host an absolutely positioned child without affecting layout
+    try {
+        const pos = getComputedStyle(wrapper).position;
+        if (!['relative', 'absolute', 'fixed'].includes(pos)) {
+            wrapper.style.position = 'relative';
+        }
+    } catch (_) {
+        // Fallback: set relative
+        wrapper.style.position = 'relative';
+    }
+
+    const btn = document.createElement('button');
+    btn.className = 'small-button chart-enlarge-btn chart-enlarge-btn-floating';
+    btn.textContent = 'Agrandir';
+    btn.title = 'Ouvrir en grand dans une fenêtre';
+    btn.style.position = 'absolute';
+    btn.style.top = '6px';
+    btn.style.right = '6px';
+    btn.style.zIndex = '3';
+    btn.style.padding = '4px 8px';
+    btn.style.fontSize = '0.8em';
+    btn.style.opacity = '0.9';
+
+    btn.addEventListener('click', () => openChartModal(canvas, titleText));
+
+    wrapper.appendChild(btn);
+}
+
+function openChartModal(originalCanvas, titleText) {
+    // Build overlay
+    const overlay = document.createElement('div');
+    overlay.className = 'modal-overlay';
+    overlay.setAttribute('role', 'dialog');
+    overlay.setAttribute('aria-modal', 'true');
+
+    const content = document.createElement('div');
+    content.className = 'modal-content';
+
+    const headerBar = document.createElement('div');
+    headerBar.className = 'modal-header';
+    const title = document.createElement('h4');
+    title.textContent = titleText || 'Graphique';
+    const closeBtn = document.createElement('button');
+    closeBtn.className = 'modal-close small-button';
+    closeBtn.textContent = 'Fermer';
+    headerBar.append(title, closeBtn);
+
+    const body = document.createElement('div');
+    body.className = 'modal-body';
+
+    content.append(headerBar, body);
+    overlay.appendChild(content);
+    document.body.appendChild(overlay);
+
+    // Prevent background scroll
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
+    // Move the existing canvas into the modal and remember where to restore
+    const chart = Chart.getChart(originalCanvas);
+    const originalParent = originalCanvas.parentElement;
+    const placeholder = document.createElement('div');
+    placeholder.style.display = 'none';
+    originalParent.insertBefore(placeholder, originalCanvas);
+    body.appendChild(originalCanvas);
+
+    // Make it bigger
+    const prevHeight = originalCanvas.style.height;
+    originalCanvas.style.height = '520px';
+    try { if (chart) chart.resize(); } catch(_) {}
+
+    function closeModal() {
+        // Restore canvas back to original place
+        try {
+            if (chart) {
+                originalCanvas.style.height = prevHeight;
+            }
+        } catch(_) {}
+        if (placeholder.parentElement) {
+            placeholder.parentElement.insertBefore(originalCanvas, placeholder);
+            placeholder.remove();
+        }
+        try { if (chart) chart.resize(); } catch(_) {}
+        document.body.removeChild(overlay);
+        document.body.style.overflow = prevOverflow;
+        document.removeEventListener('keydown', onKeydown);
+    }
+
+    function onKeydown(e) { if (e.key === 'Escape') closeModal(); }
+    document.addEventListener('keydown', onKeydown);
+    closeBtn.addEventListener('click', closeModal);
+    overlay.addEventListener('click', (e) => { if (e.target === overlay) closeModal(); });
 }
 
 // --- FONCTIONS D'AFFICHAGE DES GRAPHIQUES ---
@@ -135,7 +243,7 @@ function afficherGraphiqueConfusions(confusionsArray, canvasId, chartTitle) {
         }
     });
 }
-
+//todo
 function afficherGraphiqueSatisfactionPaireDistribution(data) {
     const canvas = document.getElementById('chartPairedSatisfaction');
     if (!canvas || Object.keys(data).length === 0) return;

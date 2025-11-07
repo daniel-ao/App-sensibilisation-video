@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Espace Atelier</title>
+  <link rel="stylesheet" href="assets/css/index.css" />
+</head>
+<body>
+  <main style="padding: 1rem; width: 100%; max-width: 960px;">
+    <div style="display:flex; flex-wrap:wrap; gap: 12px; align-items: center; margin-bottom: 8px;">
+      <label for="librarySelect" style="min-width: 180px;">Bibliothèque :</label>
+      <select id="librarySelect" style="flex:1; min-width: 260px; padding: 8px; border-radius: 8px; border: 1px solid var(--border-color-light);">
+        <option value="video_creative_common">Vidéos Creative Commons</option>
+        <option value="videos">Vidéos (Sous licence)</option>
+        <option value="video_enfant">Vidéos Enfant</option>
+      </select>
+    </div>
+    <div style="display:flex; flex-wrap:wrap; gap: 12px; align-items: center;">
+      <label for="categorySelect" style="min-width: 180px;">Catégorie :</label>
+      <select id="categorySelect" style="flex:1; min-width: 260px; padding: 8px; border-radius: 8px; border: 1px solid var(--border-color-light);">
+        <option value="">-- Choisir une catégorie --</option>
+      </select>
+    </div>
+    <div style="display:flex; flex-wrap:wrap; gap: 12px; align-items: center; margin-top: 14px;">
+      <label for="videoSelect" style="min-width: 180px;">Vidéo :</label>
+      <select id="videoSelect" disabled style="flex:1; min-width: 260px; padding: 8px; border-radius: 8px; border: 1px solid var(--border-color-light); background: #eee; color: #666;">
+        <option value="">-- Choisir une vidéo --</option>
+      </select>
+    </div>
+    <div id="videoComparisonContainer" style="margin-top: 20px;"></div>
+  </main>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/api.js"></script>
+  <script src="chart.umd.js"></script>
+  <!-- Réutilisation des utilitaires de graphiques de la page Résultats -->
+  <script src="assets/js/Resultats/graphique.js"></script>
+  <script src="assets/js/Extras/main.js"></script>
+</body>
+</html>
