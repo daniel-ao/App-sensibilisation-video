@@ -1,0 +1,16 @@
+\contentsline {section}{\numberline {1}Purpose}{2}{section.1}%
+\contentsline {section}{\numberline {2}Baseline State (Pre-Migration)}{2}{section.2}%
+\contentsline {section}{\numberline {3}Step 1: Environment Setup (Completed)}{2}{section.3}%
+\contentsline {subsection}{\numberline {3.1}Objective}{2}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.2}Actions}{2}{subsection.3.2}%
+\contentsline {subsection}{\numberline {3.3}Result}{2}{subsection.3.3}%
+\contentsline {section}{\numberline {4}Step 2: Database Initialization (Completed)}{2}{section.4}%
+\contentsline {subsection}{\numberline {4.1}Objective}{2}{subsection.4.1}%
+\contentsline {subsection}{\numberline {4.2}Artifacts Created}{2}{subsection.4.2}%
+\contentsline {subsection}{\numberline {4.3}Schema Defined}{2}{subsection.4.3}%
+\contentsline {paragraph}{sessions}{3}{section*.2}%
+\contentsline {paragraph}{users}{3}{section*.3}%
+\contentsline {subsection}{\numberline {4.4}Pragmas}{3}{subsection.4.4}%
+\contentsline {subsection}{\numberline {4.5}Verification}{3}{subsection.4.5}%
+\contentsline {section}{\numberline {5}Change Log}{3}{section.5}%
+\contentsline {section}{\numberline {6}How to Reproduce Current DB State}{4}{section.6}%

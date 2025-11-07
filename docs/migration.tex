@@ -1,0 +1,131 @@
+% migration.tex -- Living document tracking the migration to SQLite (better-sqlite3)
+% Compile with: npm run doc:build  (runs pdflatex twice inside docs/)
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{geometry}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{enumitem}
+\geometry{margin=2.5cm}
+\hypersetup{colorlinks=true,linkcolor=blue,urlcolor=blue}
+
+\lstdefinelanguage{JSON}{morestring=[b]", comment=[l]{//}, morecomment=[s]{/*}{*/}, literate={\{:}{{{\color{black}{:\!}}}}1}
+
+\title{Migration Report: CSV/JSON Storage to SQLite}
+\author{Project: App-sensibilisation-video}
+\date{\today}
+
+\begin{document}
+\maketitle
+\tableofcontents
+\newpage
+
+\section{Purpose}
+This living document records each step of migrating the project from ad-hoc CSV (\texttt{data.csv}) and JSON (\texttt{data.json}) storage to a structured SQLite database using the \texttt{better-sqlite3} Node.js library. It will be updated after every migration task (schema changes, data import, service refactors, etc.).
+
+\section{Baseline State (Pre-Migration)}
+\begin{itemize}[noitemsep]
+  \item User session data appended to \texttt{data.csv} with 17 columns (user choices, resolutions, metadata).
+  \item Aggregated score/time data persisted in \texttt{data.json} (nested objects for scores, times, precisions).
+  \item No database; all queries implied linear scans / in-memory aggregation.
+\end{itemize}
+
+\section{Step 1: Environment Setup (Completed)}
+\subsection{Objective}
+Add a performant, synchronous SQLite driver to project dependencies.
+
+\subsection{Actions}
+\begin{enumerate}[label=1.\arabic*,leftmargin=1.4cm]
+  \item Installed dependency: \texttt{better-sqlite3@\^11.10.0}.\\
+        Added to \texttt{package.json} under \texttt{dependencies}.
+  \item Updated \texttt{package-lock.json} (36 packages added transitively).\footnote{As reported by npm: ``added 36 packages, audited 115 packages, 0 vulnerabilities''.}
+  \item No other scripts modified at this step.
+\end{enumerate}
+
+\subsection{Result}
+Project is now capable of creating and interacting with a local SQLite database file. No runtime code yet consumes the DB.
+
+\section{Step 2: Database Initialization (Completed)}
+\subsection{Objective}
+Introduce a reproducible schema creation script and persistent database file.
+
+\subsection{Artifacts Created}
+\begin{itemize}[noitemsep]
+  \item Directory: \texttt{db/}
+  \item Script: \texttt{db/init-database.js}
+  \item Database file (after execution): \texttt{db/database.db}
+  \item Added npm script: \texttt{\"db:init\": \"node db/init-database.js\"}
+\end{itemize}
+
+\subsection{Schema Defined}
+Two tables established:
+
+\paragraph{sessions}
+Mirrors original CSV structure; adds surrogate primary key for internal references.
+\begin{lstlisting}[language=,breaklines=true]
+CREATE TABLE IF NOT EXISTS sessions (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user TEXT NOT NULL,
+  category1 TEXT,
+  videoName1 TEXT,
+  videoPath1 TEXT,
+  resolution1 TEXT,
+  category2 TEXT,
+  videoName2 TEXT,
+  videoPath2 TEXT,
+  resolution2 TEXT,
+  QO1 TEXT,
+  QO2 TEXT,
+  QO3 TEXT,
+  QO4 TEXT,
+  QO5 TEXT,
+  comments TEXT,
+  screenType TEXT,
+  timestamp TEXT NOT NULL
+);
+CREATE INDEX IF NOT EXISTS idx_sessions_user ON sessions(user);
+CREATE INDEX IF NOT EXISTS idx_sessions_timestamp ON sessions(timestamp);
+\end{lstlisting}
+
+\paragraph{users}
+Stores aggregate metrics previously in JSON.
+\begin{lstlisting}[language=,breaklines=true]
+CREATE TABLE IF NOT EXISTS users (
+  pseudo TEXT PRIMARY KEY,
+  totalScore INTEGER DEFAULT 0,
+  totalTime INTEGER DEFAULT 0,
+  sessionCount INTEGER DEFAULT 0
+);
+\end{lstlisting}
+
+\subsection{Pragmas}
+Enabled Write-Ahead Logging and foreign key enforcement:
+\begin{lstlisting}[language=,breaklines=true]
+PRAGMA journal_mode = WAL;
+PRAGMA foreign_keys = ON;
+\end{lstlisting}
+
+\subsection{Verification}
+Execution output confirmed creation of tables: \texttt{sessions}, \texttt{users}, plus \texttt{sqlite\_sequence} (auto-increment bookkeeping).
+
+\section{Change Log}
+\begin{description}[leftmargin=1.2cm,style=nextline]
+  \item[Step 1] Added dependency \texttt{better-sqlite3}. (No code paths yet updated.)
+  \item[Step 2] Created schema initialization script; introduced \texttt{sessions} and \texttt{users} tables; added npm script \texttt{db:init}.
+\end{description}
+
+\section{How to Reproduce Current DB State}
+Run:
+\begin{lstlisting}[language=,breaklines=true]
+npm install
+npm run db:init
+\end{lstlisting}
+This will (re)create the database with the current schema.
+
+\vfill
+\begin{center}\textit{This document will be updated after each subsequent migration task.}\end{center}
+
+\end{document}
