@@ -22,6 +22,18 @@
 \contentsline {subsection}{\numberline {5.5}How we ran it}{4}{subsection.5.5}%
 \contentsline {subsection}{\numberline {5.6}Verification}{5}{subsection.5.6}%
 \contentsline {subsection}{\numberline {5.7}Idempotency and safety}{5}{subsection.5.7}%
-\contentsline {section}{\numberline {6}Change Log}{5}{section.6}%
-\contentsline {section}{\numberline {7}How to Reproduce Current DB State}{5}{section.7}%
-\contentsline {paragraph}{Populate from existing CSV/JSON (optional)}{5}{section*.6}%
+\contentsline {section}{\numberline {6}Step 4: Replace Data Access Layer (Completed)}{5}{section.6}%
+\contentsline {subsection}{\numberline {6.1}Objective}{5}{subsection.6.1}%
+\contentsline {subsection}{\numberline {6.2}What changed}{5}{subsection.6.2}%
+\contentsline {subsection}{\numberline {6.3}Developer notes}{5}{subsection.6.3}%
+\contentsline {subsection}{\numberline {6.4}Implementation details}{5}{subsection.6.4}%
+\contentsline {paragraph}{Files changed}{5}{section*.6}%
+\contentsline {paragraph}{SQL used}{6}{section*.7}%
+\contentsline {paragraph}{Transaction boundary}{6}{section*.8}%
+\contentsline {paragraph}{Endpoint behavior summary}{6}{section*.9}%
+\contentsline {paragraph}{Why this was straightforward}{6}{section*.10}%
+\contentsline {paragraph}{Verification performed}{6}{section*.11}%
+\contentsline {paragraph}{Troubleshooting}{7}{section*.12}%
+\contentsline {section}{\numberline {7}Change Log}{7}{section.7}%
+\contentsline {section}{\numberline {8}How to Reproduce Current DB State}{7}{section.8}%
+\contentsline {paragraph}{Populate from existing CSV/JSON (optional)}{7}{section*.13}%

@@ -181,11 +181,95 @@ Observed on this run: \textbf{116} sessions and \textbf{29} users.
   \item \textbf{Dry run}: Use \texttt{DRY\_RUN=1} to validate counts before writing.
 \end{itemize}
 
+\section{Step 4: Replace Data Access Layer (Completed)}
+\subsection{Objective}
+Eliminate runtime reliance on flat files by routing all reads/writes through SQLite while keeping existing route behavior stable.
+
+\subsection{What changed}
+\begin{itemize}[noitemsep]
+  \item \textbf{SQLite-backed handlers}: \texttt{server/data/csvHandler.js} now uses SQLite instead of filesystem CSV.\
+        	exttt{appendToCsv(record)} inserts into \texttt{sessions}; \texttt{readCsv()} returns rows from \texttt{sessions} shaped like CSV records. Existing services (e.g., \texttt{statsService}) continue to work unchanged.
+  \item \textbf{dbService extensions}: \texttt{server/services/dbService.js} now opens the DB in read-write mode and provides new APIs: \\
+        \quad \texttt{insertSession(record)}, \texttt{setScore(pseudo, score)}, \texttt{getScore(pseudo)}, \texttt{setTime(pseudo, time)}, \texttt{getTime(pseudo)}, \texttt{computeGlobalAveragePrecision()}.
+  \item \textbf{Routes updated}: \texttt{server/routes/api.js} no longer writes to \texttt{data.json}. Score/time endpoints persist in \texttt{users} table; global precision is computed from \texttt{sessions}.
+\end{itemize}
+
+\subsection{Developer notes}
+\begin{itemize}[noitemsep]
+  \item The legacy \texttt{jsonHandler} remains for historical reference but is no longer used by updated routes.
+  \item Precision-related stats are computed on demand from \texttt{sessions}; no longer stored redundantly in JSON.
+  \item Existing analytics in \texttt{statsService.js} continue to operate via \texttt{readCsv()}, now SQLite-backed.
+\end{itemize}
+
+\subsection{Implementation details}
+\paragraph{Files changed}
+\begin{itemize}[noitemsep]
+  \item \texttt{server/services/dbService.js}: switched to read-write open; added helpers \texttt{setScore}, \texttt{getScore}, \texttt{setTime}, \texttt{getTime}, \texttt{computeGlobalAveragePrecision}. Kept existing read APIs.
+  \item \texttt{server/data/csvHandler.js}: replaced CSV file I/O with SQLite queries while preserving the same interface (\texttt{appendToCsv}, \texttt{readCsv}). \textbf{Note}: \texttt{appendToCsv} now wraps operations in a transaction: insert a session and upsert/increment the user's \texttt{sessionCount}.
+  \item \texttt{server/routes/api.js}: removed \texttt{jsonHandler} usage for scores/times and precision average; routes now call \texttt{dbService}.
+\end{itemize}
+
+\paragraph{SQL used}
+Upsert for users (create if absent, increment \texttt{sessionCount} otherwise):
+\begin{lstlisting}[language=,breaklines=true]
+INSERT INTO users(pseudo, totalScore, totalTime, sessionCount)
+VALUES(@pseudo, 0, 0, 1)
+ON CONFLICT(pseudo) DO UPDATE SET sessionCount = sessionCount + 1;
+\end{lstlisting}
+
+Set (overwrite) last score/time values for a pseudo:
+\begin{lstlisting}[language=,breaklines=true]
+INSERT INTO users(pseudo, totalScore, totalTime, sessionCount)
+VALUES(@pseudo, @score, 0, 0)
+ON CONFLICT(pseudo) DO UPDATE SET totalScore = excluded.totalScore;
+
+INSERT INTO users(pseudo, totalScore, totalTime, sessionCount)
+VALUES(@pseudo, 0, @time, 0)
+ON CONFLICT(pseudo) DO UPDATE SET totalTime = excluded.totalTime;
+\end{lstlisting}
+
+\paragraph{Transaction boundary}
+When recording a session (\texttt{/addUser}), we execute within a single transaction to ensure atomicity:
+\begin{enumerate}[noitemsep]
+  \item Insert into \texttt{sessions}.
+  \item Upsert \texttt{users} row and increment \texttt{sessionCount} for that pseudo.
+\end{enumerate}
+
+\paragraph{Endpoint behavior summary}
+\begin{itemize}[noitemsep]
+  \item \texttt{POST /addUser}: inserts a session; auto-creates user row on first session and increments \texttt{sessionCount}.
+  \item \texttt{POST /saveScore} / \texttt{GET /getScore}: store/read score from \texttt{users.totalScore}.
+  \item \texttt{POST /saveTime} / \texttt{GET /getTime}: store/read time from \texttt{users.totalTime}.
+  \item \texttt{GET /precision\_moyenne\_globale}: computed on demand from \texttt{sessions} (parses \texttt{QO1} vs. \texttt{resolution1/2}).
+  \item Existing stats endpoints still rely on \texttt{statsService} + \texttt{readCsv()}, which now pulls from SQLite.
+\end{itemize}
+
+\paragraph{Why this was straightforward}
+\begin{itemize}[noitemsep]
+  \item \texttt{better-sqlite3} is synchronous and simple: it fit the existing code structure without async refactors.
+  \item We preserved the \textit{shape} of CSV access by reimplementing it over SQLite, so analytics code required no changes.
+  \item Upserting into \texttt{users} avoided complex branching for first-time vs returning pseudos.
+\end{itemize}
+
+\paragraph{Verification performed}
+\begin{itemize}[noitemsep]
+  \item Required the updated modules and booted the server to confirm no runtime errors.
+  \item Queried DB summary and computed global precision via \texttt{dbService} to validate read APIs.
+  \item Inserted a test session for a brand-new pseudo and confirmed: one session row exists and the \texttt{users} row is created with \texttt{sessionCount=1}.
+\end{itemize}
+
+\paragraph{Troubleshooting}
+\begin{itemize}[noitemsep]
+  \item If \texttt{QO1/QO2} values carry stray quotes from legacy CSV, precision may compute lower than expected; consider a one-off normalization if needed.
+  \item Ensure \texttt{db/database.db} exists (run \texttt{npm run db:init}) before exercising the endpoints.
+\end{itemize}
+
 \section{Change Log}
 \begin{description}[leftmargin=1.2cm,style=nextline]
   \item[Step 1] Added dependency \texttt{better-sqlite3}. (No code paths yet updated.)
   \item[Step 2] Created schema initialization script; introduced \texttt{sessions} and \texttt{users} tables; added npm script \texttt{db:init}.
   \item[Step 3] Migrated historical data with \texttt{db/migrate-data.js}; added npm script \texttt{migrate:data}. Verified counts match sources.
+  \item[Step 4] Replaced runtime CSV/JSON access with SQLite-backed services. Endpoints now read and write directly to the DB.
 \end{description}
 
 \section{How to Reproduce Current DB State}

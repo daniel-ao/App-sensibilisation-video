@@ -6,7 +6,8 @@ const dbPath = path.join(__dirname, '..', '..', 'db', 'database.db');
 
 function openDb() {
   try {
-    return new Database(dbPath, { readonly: true });
+    // Open in read-write mode to support both queries and updates
+    return new Database(dbPath);
   } catch (e) {
     console.error('Failed to open SQLite database at', dbPath, e);
     throw e;
@@ -130,3 +131,158 @@ function getSessionById(id) {
 }
 
 module.exports = { getSummary, getSessions, getUsers, getResolutions, getSessionById };
+/**
+ * Insert a session record into the sessions table.
+ * Expects keys compatible with the schema created in db/init-database.js
+ */
+function insertSession(record) {
+  const db = openDb();
+  try {
+    const stmt = db.prepare(`
+      INSERT INTO sessions (
+        user, category1, videoName1, videoPath1, resolution1,
+        category2, videoName2, videoPath2, resolution2,
+        QO1, QO2, QO3, QO4, QO5,
+        comments, screenType, timestamp
+      ) VALUES (
+        @user, @category1, @videoName1, @videoPath1, @resolution1,
+        @category2, @videoName2, @videoPath2, @resolution2,
+        @QO1, @QO2, @QO3, @QO4, @QO5,
+        @comments, @screenType, @timestamp
+      )
+    `);
+    stmt.run({
+      user: record.user || '',
+      category1: record.category1 || '',
+      videoName1: record.videoName1 || '',
+      videoPath1: record.videoPath1 || '',
+      resolution1: record.resolution1 || '',
+      category2: record.category2 || '',
+      videoName2: record.videoName2 || '',
+      videoPath2: record.videoPath2 || '',
+      resolution2: record.resolution2 || '',
+      QO1: record.QO1 || '',
+      QO2: record.QO2 || '',
+      QO3: record.QO3 || '',
+      QO4: record.QO4 || '',
+      QO5: record.QO5 || '',
+      comments: record.comments || '',
+      screenType: record.screenType || '',
+      timestamp: record.timestamp || new Date().toISOString()
+    });
+  } finally {
+    db.close();
+  }
+}
+
+function ensureUser(pseudo) {
+  const db = openDb();
+  try {
+    const insert = db.prepare(`INSERT INTO users (pseudo, totalScore, totalTime, sessionCount) VALUES (?, 0, 0, 0)
+      ON CONFLICT(pseudo) DO NOTHING`);
+    insert.run(pseudo);
+  } finally {
+    db.close();
+  }
+}
+
+function setScore(pseudo, score) {
+  const db = openDb();
+  try {
+    const upsert = db.prepare(`
+      INSERT INTO users(pseudo, totalScore, totalTime, sessionCount)
+      VALUES(@pseudo, @score, 0, 0)
+      ON CONFLICT(pseudo) DO UPDATE SET totalScore = excluded.totalScore
+    `);
+    upsert.run({ pseudo, score: Number(score) || 0 });
+  } finally {
+    db.close();
+  }
+}
+
+function getScore(pseudo) {
+  const db = openDb();
+  try {
+    const row = db.prepare('SELECT totalScore FROM users WHERE pseudo = ?').get(pseudo);
+    return row ? row.totalScore : 0;
+  } finally {
+    db.close();
+  }
+}
+
+function setTime(pseudo, time) {
+  const db = openDb();
+  try {
+    const upsert = db.prepare(`
+      INSERT INTO users(pseudo, totalScore, totalTime, sessionCount)
+      VALUES(@pseudo, 0, @time, 0)
+      ON CONFLICT(pseudo) DO UPDATE SET totalTime = excluded.totalTime
+    `);
+    upsert.run({ pseudo, time: Number(time) || 0 });
+  } finally {
+    db.close();
+  }
+}
+
+function getTime(pseudo) {
+  const db = openDb();
+  try {
+    const row = db.prepare('SELECT totalTime FROM users WHERE pseudo = ?').get(pseudo);
+    return row ? row.totalTime : 0;
+  } finally {
+    db.close();
+  }
+}
+
+function computeGlobalAveragePrecision() {
+  const db = openDb();
+  try {
+    const rows = db.prepare('SELECT user, resolution1, resolution2, QO1 FROM sessions').all();
+    const perUser = new Map();
+    for (const r of rows) {
+      const u = (r.user || '').trim();
+      if (!u) continue;
+      const entry = perUser.get(u) || { correct: 0, total: 0 };
+      const parts = String(r.QO1 || '').replace(/[()]/g, '').split(',');
+      const p1 = (parts[0] || '').trim();
+      const p2 = (parts[1] || '').trim();
+      const res1 = (r.resolution1 || '').trim();
+      const res2 = (r.resolution2 || '').trim();
+      if (res1 && p1) {
+        entry.total += 1;
+        if (res1 === p1) entry.correct += 1;
+      }
+      if (res2 && p2) {
+        entry.total += 1;
+        if (res2 === p2) entry.correct += 1;
+      }
+      perUser.set(u, entry);
+    }
+    let users = 0;
+    let sum = 0;
+    for (const [, v] of perUser.entries()) {
+      if (v.total > 0) {
+        users += 1;
+        sum += (v.correct / v.total) * 100;
+      }
+    }
+    const moyenne = users > 0 ? sum / users : 0;
+    return { moyenne, utilisateurs: users };
+  } finally {
+    db.close();
+  }
+}
+
+module.exports = {
+  getSummary,
+  getSessions,
+  getUsers,
+  getResolutions,
+  getSessionById,
+  insertSession,
+  setScore,
+  getScore,
+  setTime,
+  getTime,
+  computeGlobalAveragePrecision
+};

@@ -1,6 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const jsonHandler = require('../data/jsonHandler');
 const csvHandler = require('../data/csvHandler');
 const videoService = require('../services/videoService');
 const statsService = require('../services/statsService');
@@ -47,28 +46,6 @@ router.post('/addUser', async (req, res) => {
         };
         await csvHandler.appendToCsv(record);
 
-        // --- Logique de calcul de précision ---
-        const data = jsonHandler.getData();
-        let bonnes = 0, total = 0;
-        const userQO1 = (QO1 || "").replace(/[()\n\r]/g, "").split(",");
-        if (resolution1 && userQO1[0]) { total++; if (resolution1.trim() === userQO1[0].trim()) bonnes++; }
-        if (resolution2 && userQO1[1]) { total++; if (resolution2.trim() === userQO1[1].trim()) bonnes++; }
-        const precisionSession = total > 0 ? (bonnes / total) * 100 : 0;
-        
-        if (!data.precisions[user]) {
-            data.precisions[user] = { moyenne: precisionSession, sessions: 1 };
-        } else {
-            let d = data.precisions[user];
-            if(typeof d !== 'object' || d === null) {
-                 d = { moyenne: d || 0, sessions: 1 };
-            }
-            d.moyenne = ((d.moyenne * d.sessions) + precisionSession) / (d.sessions + 1);
-            d.sessions += 1;
-            data.precisions[user] = d;
-        }
-        jsonHandler.saveData();
-        // --- Fin de la logique ---
-
         res.json({ message: "Utilisateur ajouté avec succès!" });
     } catch (err) {
         console.error("Erreur dans /addUser:", err);
@@ -80,26 +57,42 @@ router.post('/addUser', async (req, res) => {
 router.post('/saveScore', (req, res) => {
     const { pseudo, score } = req.body;
     if (!pseudo || typeof score !== 'number') return res.status(400).json({ message: "Données invalides." });
-    const data = jsonHandler.getData();
-    data.scores[pseudo] = score;
-    jsonHandler.saveData();
-    res.json({ message: "Score sauvegardé." });
+    try {
+        dbService.setScore(pseudo, score);
+        res.json({ message: "Score sauvegardé." });
+    } catch (e) {
+        console.error('Erreur /saveScore', e);
+        res.status(500).json({ message: 'Erreur interne.' });
+    }
 });
 router.get('/getScore', (req, res) => {
-    const score = jsonHandler.getData().scores[req.query.pseudo] || 0;
-    res.json({ score });
+    try {
+        const score = dbService.getScore(req.query.pseudo);
+        res.json({ score });
+    } catch (e) {
+        console.error('Erreur /getScore', e);
+        res.status(500).json({ message: 'Erreur interne.' });
+    }
 });
 router.post('/saveTime', (req, res) => {
     const { pseudo, time } = req.body;
     if (!pseudo || typeof time !== 'number') return res.status(400).json({ message: "Données invalides." });
-    const data = jsonHandler.getData();
-    data.times[pseudo] = time;
-    jsonHandler.saveData();
-    res.json({ message: "Temps sauvegardé." });
+    try {
+        dbService.setTime(pseudo, time);
+        res.json({ message: "Temps sauvegardé." });
+    } catch (e) {
+        console.error('Erreur /saveTime', e);
+        res.status(500).json({ message: 'Erreur interne.' });
+    }
 });
 router.get('/getTime', (req, res) => {
-    const time = jsonHandler.getData().times[req.query.pseudo] || 0;
-    res.json({ time });
+    try {
+        const time = dbService.getTime(req.query.pseudo);
+        res.json({ time });
+    } catch (e) {
+        console.error('Erreur /getTime', e);
+        res.status(500).json({ message: 'Erreur interne.' });
+    }
 });
 
 // --- Routes Statistiques Personnelles ---
@@ -150,19 +143,13 @@ router.get('/global-stats/satisfaction-detailed', async (req, res) => {
     res.json(data);
 });
 router.get('/precision_moyenne_globale', (req, res) => {
-    const precisions = jsonHandler.getData().precisions;
-    let totalMoyenne = 0, count = 0;
-    for (const pseudo in precisions) {
-        const val = precisions[pseudo];
-        if (typeof val === 'number') { 
-            totalMoyenne += val;
-        } else if (val && typeof val.moyenne === 'number') {
-            totalMoyenne += val.moyenne;
-        }
-        count++;
+    try {
+        const result = dbService.computeGlobalAveragePrecision();
+        res.json(result);
+    } catch (e) {
+        console.error('Erreur /precision_moyenne_globale', e);
+        res.status(500).json({ message: 'Erreur interne.' });
     }
-    const moyenne = count > 0 ? totalMoyenne / count : 0;
-    res.json({ moyenne, utilisateurs: count });
 });
 
 router.get('/stats/video-perception/:videoName', async (req, res) => {
