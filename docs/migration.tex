@@ -263,6 +263,80 @@ When recording a session (\texttt{/addUser}), we execute within a single transac
   \item If \texttt{QO1/QO2} values carry stray quotes from legacy CSV, precision may compute lower than expected; consider a one-off normalization if needed.
   \item Ensure \texttt{db/database.db} exists (run \texttt{npm run db:init}) before exercising the endpoints.
 \end{itemize}
+\subsection{Data repair: normalize mis-parsed pairs (Completed)}
+During the CSV\,$\to$\,SQLite migration, some rows had \texttt{QO1/QO2} split across \texttt{QO1..QO4}. We added a one-off script to reconstruct proper pairs directly in the database:
+\begin{itemize}[noitemsep]
+  \item Script: \texttt{db/fix-qo-fields.js}
+  \item Logic: load rows, detect pairs without commas, rebuild \texttt{QO1=(perceived1,perceived2)} and \texttt{QO2=(satisfaction1,satisfaction2)}, then update within a transaction.
+  \item Result: majority of sessions normalized; residual quoting does not affect SQL parsing because queries strip parentheses/quotes.
+\end{itemize}
+
+\section{Step 5: Adapt the Service Layer (Completed)}
+\subsection{Objective}
+Stop reading all sessions in JS and delegate aggregations to SQLite using SQL (\texttt{GROUP BY}, conditional \texttt{SUM/COUNT}) for performance and correctness.
+
+\subsection{What changed}
+\begin{itemize}[noitemsep]
+  \item \textbf{Refactor}: \texttt{server/services/statsService.js} now opens the DB read-only and issues direct SQL queries instead of iterating arrays from \texttt{readCsv()}.
+  \item \textbf{Compatibility}: Exported function names kept to avoid breaking routes/UI; some niche functions are stubbed for later SQL ports.
+  \item \textbf{Backups}: Originals saved to \texttt{backups/step5/} prior to refactor.
+\end{itemize}
+
+\subsection{Implementation details}
+We use CTEs and SQLite string functions to split the stored pairs inline:
+\begin{lstlisting}[language=,breaklines=true]
+WITH base AS (
+  SELECT resolution1, resolution2,
+         TRIM(REPLACE(REPLACE(REPLACE(QO2,'"',''),'(',''),')','')) AS pair
+  FROM sessions
+), split AS (
+  SELECT resolution1 AS resolution,
+         TRIM(SUBSTR(pair,1,CASE WHEN INSTR(pair,',')>0 THEN INSTR(pair,',')-1 ELSE LENGTH(pair) END)) AS satisfaction
+  FROM base
+  UNION ALL
+  SELECT resolution2,
+         TRIM(SUBSTR(pair,CASE WHEN INSTR(pair,',')>0 THEN INSTR(pair,',')+1 ELSE LENGTH(pair)+1 END))
+  FROM base
+)
+SELECT LOWER(satisfaction) AS satisfaction, resolution, COUNT(*) AS count
+FROM split
+WHERE resolution <> '' AND satisfaction <> ''
+GROUP BY resolution, satisfaction;
+\end{lstlisting}
+
+User precision is computed similarly by splitting \texttt{QO1} into two perceived resolutions and comparing with \texttt{resolution1/2}:
+\begin{lstlisting}[language=,breaklines=true]
+WITH base AS (
+  SELECT resolution1, resolution2,
+         TRIM(REPLACE(REPLACE(REPLACE(QO1,'"',''),'(',''),')','')) AS pair
+  FROM sessions
+  WHERE LOWER(user) = LOWER(@username)
+), parts AS (
+  SELECT
+    resolution1, resolution2, pair,
+    TRIM(SUBSTR(pair,1,CASE WHEN INSTR(pair,',')>0 THEN INSTR(pair,',')-1 ELSE LENGTH(pair) END)) AS p1,
+    TRIM(SUBSTR(pair,CASE WHEN INSTR(pair,',')>0 THEN INSTR(pair,',')+1 ELSE LENGTH(pair)+1 END)) AS p2
+  FROM base
+), metrics AS (
+  SELECT
+    SUM(CASE WHEN resolution1<>'' AND p1<>'' THEN 1 ELSE 0 END) AS total1,
+    SUM(CASE WHEN resolution2<>'' AND p2<>'' THEN 1 ELSE 0 END) AS total2,
+    SUM(CASE WHEN resolution1 = p1 THEN 1 ELSE 0 END) AS correct1,
+    SUM(CASE WHEN resolution2 = p2 THEN 1 ELSE 0 END) AS correct2
+  FROM parts
+)
+SELECT (total1+total2) AS total, (correct1+correct2) AS correct FROM metrics;
+\end{lstlisting}
+
+\subsection{Verification}
+We executed small Node checks to validate shapes and counts of: user precision, global satisfaction, confusions, device and category breakdowns. Outputs matched expectations after the \texttt{QO} normalization step.
+
+\subsection{Notes}
+\begin{itemize}[noitemsep]
+  \item This change removes full in-memory scans and leverages SQLite for speed and simplicity.
+  \item Minor residual quoting in data is neutralized by SQL-side \texttt{REPLACE/TRIM}.
+  \item Remaining detailed functions can be ported to SQL using the same pattern if the UI requires them.
+\end{itemize}
 
 \section{Change Log}
 \begin{description}[leftmargin=1.2cm,style=nextline]
@@ -270,6 +344,7 @@ When recording a session (\texttt{/addUser}), we execute within a single transac
   \item[Step 2] Created schema initialization script; introduced \texttt{sessions} and \texttt{users} tables; added npm script \texttt{db:init}.
   \item[Step 3] Migrated historical data with \texttt{db/migrate-data.js}; added npm script \texttt{migrate:data}. Verified counts match sources.
   \item[Step 4] Replaced runtime CSV/JSON access with SQLite-backed services. Endpoints now read and write directly to the DB.
+  \item[Step 5] Refactored stats service to SQL-based aggregations; added one-off data repair for \texttt{QO1/QO2} pairs.
 \end{description}
 
 \section{How to Reproduce Current DB State}

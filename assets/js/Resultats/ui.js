@@ -212,21 +212,23 @@ function displayDetailedRecap() {
     
     sessions.forEach((data, sessionIndex) => {
         setTimeout(async () => {
-            const videoName = decodeURIComponent((data.videoPath1 || "").split('/').slice(-2, -1)[0]);
-            if (!videoName) return;
+            // Raw (decoded) video name for display; encoded for API calls to handle special chars.
+            const rawVideoName = decodeURIComponent((data.videoPath1 || "").split('/').slice(-2, -1)[0]);
+            if (!rawVideoName) return;
+            const encodedVideoName = encodeURIComponent(rawVideoName);
 
-            const uniqueId = `${videoName.replace(/[^a-zA-Z0-9]/g, '-')}-${sessionIndex}-1`;
+            const uniqueId = `${rawVideoName.replace(/[^a-zA-Z0-9]/g, '-')}-${sessionIndex}-1`;
             const satisfactionContainerId = `satisfaction-container-${uniqueId}`;
             const perceptionCanvasId = `perception-chart-${uniqueId}`;
             const perceptionTitleId = `stats-title-${uniqueId}`;
             const visualComparisonContainerId = `visual-comparison-container-${uniqueId}`;
             
             // --- CHARGEMENT DES GRAPHIQUES DE SATISFACTION ---
-            getSatisfactionByVideoAndDevice(videoName).then(satisfactionData => {
+            getSatisfactionByVideoAndDevice(encodedVideoName).then(satisfactionData => {
                 const container = document.getElementById(satisfactionContainerId);
                 if (!container) return;
                 let finalSatisfactionData = satisfactionData;
-                let titlePrefix = `Satisfaction pour "${cleanVideoNameForDisplay(videoName)}"`;
+                let titlePrefix = `Satisfaction pour "${cleanVideoNameForDisplay(rawVideoName)}"`;
                 if (Object.keys(satisfactionData).length === 0) {
                     titlePrefix += " (Votre session)";
                     const sessionSatisfaction = {};
@@ -251,7 +253,7 @@ function displayDetailedRecap() {
 
             // --- CHARGEMENT DES GRAPHIQUES DE PERCEPTION ---
             const titleElement = document.getElementById(perceptionTitleId);
-            getVideoPerceptionStats(videoName).then(statsData => {
+            getVideoPerceptionStats(encodedVideoName).then(statsData => {
                 let finalStatsData = statsData;
                 if (Object.keys(statsData).length === 0) {
                     if (titleElement) titleElement.textContent += " (Votre session)";
@@ -285,8 +287,8 @@ function displayDetailedRecap() {
             if (visualContainer) {
                 try {
                     const [availableResolutions, satisfactionData] = await Promise.all([
-                        getVideoResolutions(videoName),
-                        getSatisfactionByVideoAndDevice(videoName)
+                        getVideoResolutions(encodedVideoName),
+                        getSatisfactionByVideoAndDevice(encodedVideoName)
                     ]);
                     if (!availableResolutions || availableResolutions.length === 0) throw new Error("Aucune résolution disponible.");
 

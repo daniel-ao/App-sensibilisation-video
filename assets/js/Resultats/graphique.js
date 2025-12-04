@@ -5,6 +5,12 @@
 // Les constantes de configuration sont maintenant dans assets/js/config.js
 // Les appels fetch sont maintenant dans assets/js/api.js
 
+/**
+ * Retourne le nom d'affichage pour un type d'appareil donné.
+ * Convertit 'tablet' en 'TABLETTE' et met les autres en majuscules.
+ * @param {string} deviceKey - La clé de l'appareil (ex: 'pc', 'tablet', 'mobile').
+ * @returns {string} Le nom formaté pour l'affichage.
+ */
 function getDeviceDisplayName(deviceKey) {
     if (deviceKey.toLowerCase() === 'tablet') {
         return 'TABLETTE';
@@ -13,6 +19,16 @@ function getDeviceDisplayName(deviceKey) {
 }
 
 // --- FONCTION UTILITAIRE DE CRÉATION DE GRAPHIQUE ---
+
+/**
+ * Crée ou met à jour un graphique Chart.js sur un canvas donné.
+ * Détruit l'instance existante si elle existe pour éviter les conflits.
+ * Ajoute également un bouton pour agrandir le graphique.
+ * @param {HTMLCanvasElement} canvas - L'élément canvas où dessiner le graphique.
+ * @param {string} type - Le type de graphique (ex: 'bar', 'line').
+ * @param {Object} data - Les données du graphique au format Chart.js.
+ * @param {Object} options - Les options de configuration du graphique.
+ */
 function createChart(canvas, type, data, options) {
     if (!canvas) return;
     const existingChart = Chart.getChart(canvas);
@@ -35,6 +51,12 @@ function createChart(canvas, type, data, options) {
     }
 }
 
+/**
+ * Attache un bouton flottant "Agrandir" au conteneur du canvas.
+ * Ce bouton permet d'ouvrir le graphique en mode plein écran (modal).
+ * @param {HTMLCanvasElement} canvas - Le canvas associé au bouton.
+ * @param {string} titleText - Le titre à afficher dans la modale.
+ */
 function attachEnlargeButtonToCanvas(canvas, titleText) {
     // Find a suitable wrapper to host a floating button (no layout shift)
     const wrapper = canvas.closest('.chart-canvas-container, .dynamic-chart-wrapper, .video-chart-wrapper') || canvas.parentElement;
@@ -71,6 +93,12 @@ function attachEnlargeButtonToCanvas(canvas, titleText) {
     wrapper.appendChild(btn);
 }
 
+/**
+ * Ouvre une modale contenant le graphique agrandi.
+ * Gère le déplacement du canvas dans la modale et sa restauration à la fermeture.
+ * @param {HTMLCanvasElement} originalCanvas - Le canvas à afficher dans la modale.
+ * @param {string} titleText - Le titre de la modale.
+ */
 function openChartModal(originalCanvas, titleText) {
     // Build overlay
     const overlay = document.createElement('div');
@@ -139,6 +167,12 @@ function openChartModal(originalCanvas, titleText) {
 
 // --- FONCTIONS D'AFFICHAGE DES GRAPHIQUES ---
 
+/**
+ * Affiche un graphique en barres empilées de la satisfaction par résolution.
+ * @param {Object} data - Les données de satisfaction groupées par résolution.
+ * @param {string} chartTitle - Le titre du graphique.
+ * @param {string} canvasId - L'ID de l'élément canvas HTML.
+ */
 function afficherSatisfactionParResolution(data, chartTitle, canvasId) {
     const canvas = document.getElementById(canvasId);
     if (!canvas) return;
@@ -170,15 +204,40 @@ function afficherSatisfactionParResolution(data, chartTitle, canvasId) {
     });
 }
 
+/**
+ * Affiche une série de graphiques de satisfaction, un par appareil (PC, Tablette, Mobile).
+ * Gère le cas particulier des statistiques personnelles ("Votre Satisfaction") en affichant des placeholders si les données sont manquantes.
+ * @param {Object} fullData - Les données complètes groupées par résolution puis par appareil.
+ * @param {string} containerId - L'ID du conteneur HTML où injecter les graphiques.
+ * @param {string} [chartTitlePrefix="Satisfaction"] - Préfixe pour le titre de chaque graphique.
+ */
 function afficherSatisfactionParAppareil(fullData, containerId, chartTitlePrefix = "Satisfaction") {
+    console.log('***************************************************************************************************************');
     const container = document.getElementById(containerId);
     if (!container) return;
     container.innerHTML = '';
 
     const allResolutionsSet = new Set(Object.keys(fullData));
     const allDevicesSet = new Set(Object.values(fullData).flatMap(res => Object.keys(res)));
-    const sortedResolutions = Array.from(allResolutionsSet).filter(res => RESOLUTION_ORDER.includes(res)).sort((a, b) => RESOLUTION_ORDER.indexOf(a) - RESOLUTION_ORDER.indexOf(b));
-    let devicesArray = Array.from(allDevicesSet).sort((a, b) => DEVICE_ORDER.indexOf(a.toLowerCase()) - DEVICE_ORDER.indexOf(b.toLowerCase()));
+    const sortedResolutions = Array.from(allResolutionsSet)
+        .filter(res => RESOLUTION_ORDER.includes(res))
+        .sort((a, b) => RESOLUTION_ORDER.indexOf(a) - RESOLUTION_ORDER.indexOf(b));
+    let devicesArray = Array.from(allDevicesSet)
+        .sort((a, b) => DEVICE_ORDER.indexOf(a.toLowerCase()) - DEVICE_ORDER.indexOf(b.toLowerCase()));
+
+    // If personal stats (prefix starts with 'Votre'), ensure we show placeholders for all known devices.
+    if (chartTitlePrefix.toLowerCase().startsWith('votre')) {
+        const desired = DEVICE_ORDER.slice(0, 3); // pc, tablet, mobile
+        // Add missing devices to list preserving order
+        devicesArray = desired;
+        // Inject empty structures for missing devices across resolutions so loop proceeds.
+        sortedResolutions.forEach(res => {
+            if (!fullData[res]) fullData[res] = {};
+            devicesArray.forEach(dev => {
+                if (!fullData[res][dev]) fullData[res][dev] = {}; // empty object => totals zero
+            });
+        });
+    }
     
     devicesArray.forEach(device => {
         const chartWrapper = document.createElement('div');
@@ -187,8 +246,23 @@ function afficherSatisfactionParAppareil(fullData, containerId, chartTitlePrefix
         chartWrapper.appendChild(canvas);
         container.appendChild(chartWrapper);
 
-        const totals = sortedResolutions.map(res => SATISFACTION_LEVELS_CONFIG.reduce((sum, lc) => sum + (fullData[res]?.[device]?.[lc.key] || 0), 0));
-        if (totals.every(t => t === 0)) { container.removeChild(chartWrapper); return; }
+        const totals = sortedResolutions.map(res => SATISFACTION_LEVELS_CONFIG
+            .reduce((sum, lc) => sum + (fullData[res]?.[device]?.[lc.key] || 0), 0));
+    if (totals.every(t => t === 0)) {
+            // For personal stats we keep a placeholder instead of removing chart.
+            if (chartTitlePrefix.toLowerCase().startsWith('votre')) {
+                const placeholder = document.createElement('div');
+                placeholder.className = 'no-data-placeholder';
+                placeholder.style.textAlign = 'center';
+                placeholder.style.padding = '1rem';
+                placeholder.style.color = '#6c757d';
+                placeholder.textContent = 'Aucune donnée disponible pour cet appareil.';
+                chartWrapper.appendChild(placeholder);
+            } else {
+                container.removeChild(chartWrapper);
+            }
+            return; // skip dataset creation for this device
+        }
 
         const datasets = SATISFACTION_LEVELS_CONFIG.map(lc => ({
             label: lc.text,
@@ -211,6 +285,13 @@ function afficherSatisfactionParAppareil(fullData, containerId, chartTitlePrefix
     });
 }
 
+/**
+ * Affiche un graphique horizontal des confusions de résolution (Réelle -> Perçue).
+ * Filtre les paires invalides et agrège les comptes.
+ * @param {Array} confusionsArray - Tableau d'objets { pair: "res1 -> res2", count: N }.
+ * @param {string} canvasId - L'ID du canvas.
+ * @param {string|Array} chartTitle - Le titre du graphique.
+ */
 function afficherGraphiqueConfusions(confusionsArray, canvasId, chartTitle) {
     const canvas = document.getElementById(canvasId);
     if (!canvas) { console.log(`Canvas ${canvasId} non trouvé.`); return; }
@@ -224,26 +305,94 @@ function afficherGraphiqueConfusions(confusionsArray, canvasId, chartTitle) {
         ctx.fillText("Aucune donnée de confusion à afficher.", canvas.width / 2, canvas.height / 2);
         return;
     }
-    
-    const labels = confusionsArray.map(item => item.pair); 
-    const dataCounts = confusionsArray.map(item => item.count);
+    // --- Normalisation & Filtrage ---
+    const cleaned = [];
+    const invalid = [];
+    confusionsArray.forEach(item => {
+        const parts = item.pair.split('→'); // already formatted "real → perceived"
+        if (parts.length !== 2) { invalid.push(item); return; }
+        const real = parts[0].trim();
+        const perceived = parts[1].trim();
+        const realLower = real.toLowerCase();
+        const perceivedLower = perceived.toLowerCase();
+        if (RESOLUTION_ORDER.includes(realLower) && RESOLUTION_ORDER.includes(perceivedLower)) {
+            cleaned.push({ pair: `${realLower} → ${perceivedLower}`, count: item.count });
+        } else {
+            invalid.push(item);
+        }
+    });
+
+    // Combine duplicates after lowercasing.
+    const aggregatedMap = new Map();
+    cleaned.forEach(item => {
+        const prev = aggregatedMap.get(item.pair) || 0;
+        aggregatedMap.set(item.pair, prev + item.count);
+    });
+    const aggregated = Array.from(aggregatedMap.entries()).map(([pair, count]) => ({ pair, count }));
+
+    // Sort by count descending
+    aggregated.sort((a, b) => b.count - a.count);
+
+    const labels = aggregated.map(item => item.pair);
+    const dataCounts = aggregated.map(item => item.count);
+
+    // Adjust chart title coercing to string
+    const finalTitle = Array.isArray(chartTitle) ? chartTitle.join(' ') : (chartTitle || 'Confusions');
 
     createChart(canvas, 'bar', {
-        labels: labels,
+        labels,
         datasets: [{
-            label: 'Nombre de Confusions', data: dataCounts,
-            backgroundColor: 'rgba(118, 189, 216, 0.7)', borderColor: 'rgba(75, 152, 192, 1)',
+            label: 'Nombre de Confusions',
+            data: dataCounts,
+            backgroundColor: 'rgba(118, 189, 216, 0.7)',
+            borderColor: 'rgba(75, 152, 192, 1)',
             borderWidth: 1
         }]
     }, {
-        indexAxis: 'x', 
-        plugins: { title: { display: true, text: chartTitle }, legend: { display: false } },
+        indexAxis: 'x',
+        plugins: {
+            title: { display: true, text: finalTitle },
+            legend: { display: false },
+            tooltip: {
+                callbacks: {
+                    title: items => items[0].label,
+                    label: ctx => `Occurrences: ${ctx.parsed.y}`
+                }
+            }
+        },
         scales: {
-            x: { beginAtZero: true, title: { display: true, text: 'Nombre d\'occurrences' }, ticks: { stepSize: 1 } },
+            x: {
+                title: { display: true, text: 'Résolution réelle → Résolution perçue' },
+                ticks: { maxRotation: 50, minRotation: 30, autoSkip: false }
+            },
+            y: {
+                beginAtZero: true,
+                title: { display: true, text: "Nombre d'occurrences" },
+                ticks: { precision: 0 }
+            }
         }
     });
+
+    // Optional: display info about filtered invalid pairs
+    if (invalid.length > 0) {
+        const wrapper = canvas.closest('.chart-canvas-container') || canvas.parentElement;
+        if (wrapper && !wrapper.querySelector('.confusions-filter-note')) {
+            const note = document.createElement('div');
+            note.className = 'confusions-filter-note';
+            note.style.fontSize = '0.7rem';
+            note.style.marginTop = '4px';
+            note.style.color = '#6c757d';
+            note.textContent = `${invalid.length} entrées ignorées (valeurs non reconnues).`;
+            wrapper.appendChild(note);
+        }
+    }
 }
 //todo
+/**
+ * Affiche un graphique comparant la distribution de satisfaction pour des paires de résolutions.
+ * Utile pour les comparaisons directes (A/B testing).
+ * @param {Object} data - Données structurées par paire de résolutions.
+ */
 function afficherGraphiqueSatisfactionPaireDistribution(data) {
     const canvas = document.getElementById('chartPairedSatisfaction');
     if (!canvas || Object.keys(data).length === 0) return;
@@ -283,6 +432,10 @@ function afficherGraphiqueSatisfactionPaireDistribution(data) {
     });
 }
 
+/**
+ * Récupère et affiche la satisfaction globale groupée par catégorie de vidéo.
+ * Utilise un graphique en barres empilées.
+ */
 async function afficherSatisfactionParCategorie() {
     const data = await getGlobalSatisfactionByCategory();
     const canvas = document.getElementById('chartSatisfactionByCategory');
@@ -333,6 +486,10 @@ async function afficherSatisfactionParCategorie() {
     });
 }
 
+/**
+ * Récupère et affiche le taux d'erreur de perception par catégorie de vidéo.
+ * Montre la proportion de réponses correctes vs incorrectes.
+ */
 async function afficherErreurPerceptionParCategorie() {
     const data = await getGlobalPerceptionByCategory();
     const canvas = document.getElementById('chartPerceptionErrorByCategory');
@@ -359,6 +516,10 @@ async function afficherErreurPerceptionParCategorie() {
     });
 }
 
+/**
+ * Affiche une vue détaillée de la satisfaction, segmentée par appareil et catégorie.
+ * Crée dynamiquement des blocs de graphiques avec un sélecteur de résolution pour chaque appareil.
+ */
 async function afficherSatisfactionDetaillee() {
     try {
         const data = await getGlobalSatisfactionDetailed();
@@ -439,6 +600,12 @@ async function afficherSatisfactionDetaillee() {
     }
 }
 
+/**
+ * Affiche un graphique de perception pour une vidéo spécifique.
+ * Montre comment les utilisateurs ont perçu la qualité de la vidéo par rapport à sa résolution réelle.
+ * @param {string} canvasId - L'ID du canvas.
+ * @param {Object} videoData - Les données de perception pour la vidéo.
+ */
 function afficherGraphiquePerceptionVideo(canvasId, videoData) {
     const canvas = document.getElementById(canvasId);
     if (!canvas) return;
@@ -476,7 +643,15 @@ function afficherGraphiquePerceptionVideo(canvasId, videoData) {
     });
 }
 
+
+/**
+ * Affiche les graphiques de satisfaction pour une vidéo spécifique, séparés par appareil.
+ * @param {HTMLElement} container - Le conteneur HTML où ajouter les graphiques.
+ * @param {Object} data - Les données de satisfaction de la vidéo.
+ * @param {string} videoName - Le nom de la vidéo pour le titre.
+ */
 function afficherSatisfactionVideoParAppareil(container, data, videoName) {
+    console.log('***************************************************************************************************************');
     if (!container || Object.keys(data).length === 0) {
         container.innerHTML = "<p style='text-align:center; color: #888; padding: 1rem;'>Pas de données de satisfaction pour cette vidéo.</p>";
         return;

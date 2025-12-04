@@ -23,7 +23,8 @@ async function initPersonalCharts(pseudo) {
     
     afficherSatisfactionParAppareil(satisfactionDevice, 'satisfactionByDeviceChartsContainer', 'Votre Satisfaction');
     
-    afficherGraphiqueConfusions(confusions, 'chartConfusions', ['Vos Confusions (Réelle → Perçue)']);
+    // Title parameter should be a string, not an array.
+    afficherGraphiqueConfusions(confusions, 'chartConfusions', 'Vos Confusions (Réelle → Perçue)');
 }
 
 async function initGlobalCharts() {
@@ -36,7 +37,7 @@ async function initGlobalCharts() {
     
     afficherSatisfactionParResolution(satisfactionCumul, 'Satisfaction Globale Cumulée (Tous Utilisateurs)', 'globalChartSatisfactionCumul');
     afficherSatisfactionParAppareil(satisfactionDevice, 'globalSatisfactionByDeviceChartsContainer', 'Satisfaction Globale');
-    afficherGraphiqueConfusions(confusions, 'globalChartConfusions', ['Confusions Globales (Réelle → Perçue)']);
+    afficherGraphiqueConfusions(confusions, 'globalChartConfusions', 'Confusions Globales (Réelle → Perçue)');
     afficherGraphiqueSatisfactionPaireDistribution(pairedSatisfaction);
     
     // Ces fonctions sont asynchrones et gèrent leur propre fetch
