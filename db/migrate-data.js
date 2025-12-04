@@ -59,7 +59,7 @@ function parseCSV(raw) {
 // Map CSV row to the schema used when we created sessions table.
 function normalizeSession(row) {
   // Source columns (confirmed from data.csv header):
-  // user,category1,videoName1,videoPath1,resolution1,category2,videoName2,videoPath2,resolution2,QO1,QO2,QO3,QO4,QO5,comments,screenType,timestamp
+  // user,category1,videoName1,videoPath1,resolution1,category2,videoName2,videoPath2,resolution2,QO1,QO2,QO3,QO4,comments,screenType,timestamp
   return {
     user: row.user || 'unknown',
     category1: row.category1 || null,
@@ -74,7 +74,6 @@ function normalizeSession(row) {
     QO2: row.QO2 || null,
     QO3: row.QO3 || null,
     QO4: row.QO4 || null,
-    QO5: row.QO5 || null,
     comments: row.comments || null,
     screenType: row.screenType || null,
     timestamp: row.timestamp || new Date().toISOString()
@@ -112,11 +111,11 @@ const insertSessionStmt = db.prepare(`
   INSERT INTO sessions (
     user, category1, videoName1, videoPath1, resolution1,
     category2, videoName2, videoPath2, resolution2,
-    QO1, QO2, QO3, QO4, QO5,
+    QO1, QO2, QO3, QO4,
     comments, screenType, timestamp
   ) VALUES (@user, @category1, @videoName1, @videoPath1, @resolution1,
             @category2, @videoName2, @videoPath2, @resolution2,
-            @QO1, @QO2, @QO3, @QO4, @QO5,
+            @QO1, @QO2, @QO3, @QO4,
             @comments, @screenType, @timestamp)
 `);
 

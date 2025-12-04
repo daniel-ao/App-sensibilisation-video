@@ -142,12 +142,12 @@ function insertSession(record) {
       INSERT INTO sessions (
         user, category1, videoName1, videoPath1, resolution1,
         category2, videoName2, videoPath2, resolution2,
-        QO1, QO2, QO3, QO4, QO5,
+        QO1, QO2, QO3, QO4,
         comments, screenType, timestamp
       ) VALUES (
         @user, @category1, @videoName1, @videoPath1, @resolution1,
         @category2, @videoName2, @videoPath2, @resolution2,
-        @QO1, @QO2, @QO3, @QO4, @QO5,
+        @QO1, @QO2, @QO3, @QO4,
         @comments, @screenType, @timestamp
       )
     `);
@@ -165,7 +165,6 @@ function insertSession(record) {
       QO2: record.QO2 || '',
       QO3: record.QO3 || '',
       QO4: record.QO4 || '',
-      QO5: record.QO5 || '',
       comments: record.comments || '',
       screenType: record.screenType || '',
       timestamp: record.timestamp || new Date().toISOString()

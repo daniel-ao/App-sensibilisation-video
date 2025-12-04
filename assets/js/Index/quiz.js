@@ -103,7 +103,6 @@ function submitQuiz() {
         QO2: `(${(quizAnswers.imageQuality1 || "").trim()}, ${(quizAnswers.imageQuality2 || "").trim()})`,
         QO3: (quizAnswers.preferredResolution || "").trim(),
         QO4: (quizAnswers.importantCriteria || "").trim(),
-        QO5: (quizAnswers.comments || "").trim(),
         comments: (quizAnswers.comments || "").trim(),
         screenType: detectDeviceType(),
     };

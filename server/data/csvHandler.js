@@ -16,12 +16,12 @@ async function appendToCsv(record) {
                     INSERT INTO sessions (
                         user, category1, videoName1, videoPath1, resolution1,
                         category2, videoName2, videoPath2, resolution2,
-                        QO1, QO2, QO3, QO4, QO5,
+                        QO1, QO2, QO3, QO4,
                         comments, screenType, timestamp
                     ) VALUES (
                         @user, @category1, @videoName1, @videoPath1, @resolution1,
                         @category2, @videoName2, @videoPath2, @resolution2,
-                        @QO1, @QO2, @QO3, @QO4, @QO5,
+                        @QO1, @QO2, @QO3, @QO4,
                         @comments, @screenType, @timestamp
                     )
                 `);
@@ -46,7 +46,6 @@ async function appendToCsv(record) {
                                 QO2: rec.QO2 || '',
                                 QO3: rec.QO3 || '',
                                 QO4: rec.QO4 || '',
-                                QO5: rec.QO5 || '',
                                 comments: rec.comments || '',
                                 screenType: rec.screenType || '',
                                 timestamp: rec.timestamp || new Date().toISOString()
@@ -73,7 +72,7 @@ function readCsv() {
         const rows = db.prepare(`
           SELECT user, category1, videoName1, videoPath1, resolution1,
                  category2, videoName2, videoPath2, resolution2,
-                 QO1, QO2, QO3, QO4, QO5,
+                 QO1, QO2, QO3, QO4,
                  comments, screenType, timestamp
           FROM sessions
         `).all();
@@ -91,7 +90,6 @@ function readCsv() {
             QO2: r.QO2 || '',
             QO3: r.QO3 || '',
             QO4: r.QO4 || '',
-            QO5: r.QO5 || '',
             comments: r.comments || '',
             screenType: r.screenType || '',
             timestamp: r.timestamp || ''

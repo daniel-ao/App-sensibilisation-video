@@ -35,7 +35,7 @@ db.exec(pragmas);
 // Schema design
 // 1) sessions table mirrors the CSV header exactly, with an auto id.
 // CSV headers observed:
-// user,category1,videoName1,videoPath1,resolution1,category2,videoName2,videoPath2,resolution2,QO1,QO2,QO3,QO4,QO5,comments,screenType,timestamp
+// user,category1,videoName1,videoPath1,resolution1,category2,videoName2,videoPath2,resolution2,QO1,QO2,QO3,QO4,comments,screenType,timestamp
 
 const createTables = `
   CREATE TABLE IF NOT EXISTS sessions (
@@ -53,7 +53,6 @@ const createTables = `
     QO2 TEXT,
     QO3 TEXT,
     QO4 TEXT,
-    QO5 TEXT,
     comments TEXT,
     screenType TEXT,
     timestamp TEXT NOT NULL
