@@ -4,6 +4,9 @@
  */
 
 (function(){
+  // API base URL - use the same as api.js for consistency
+  const API_BASE = `http://${window.location.hostname}:3300`;
+  
   // Support two modes:
   // - Modal mode (inside index.html with #dbBrowserOverlay)
   // - Page mode (standalone donnees.html without overlay)
@@ -62,7 +65,7 @@
     loadData();
   }
   function fetchSummary() {
-    fetch('/api/db/summary').then(r=>r.json()).then(data => {
+    fetch(`${API_BASE}/api/db/summary`).then(r=>r.json()).then(data => {
       summaryCards.innerHTML = '';
       const ts = data.latestSession;
       const parsed = ts ? new Date(ts) : null;
@@ -97,7 +100,7 @@
       if (sortBy) { paramsObj.sortBy = sortBy; paramsObj.sortDir = sortDir; }
     }
     const params = new URLSearchParams(paramsObj);
-    fetch(`${endpoint}?${params.toString()}`)
+    fetch(`${API_BASE}${endpoint}?${params.toString()}`)
       .then(r=>r.json())
       .then(renderTable)
       .catch(err => console.error('Data fetch error', err));
@@ -184,7 +187,7 @@
   }
 
   function fetchResolutions() {
-    fetch('/api/db/resolutions').then(r=>r.json()).then(data => {
+    fetch(`${API_BASE}/api/db/resolutions`).then(r=>r.json()).then(data => {
       if (!resolutionSelect) return;
       (data.resolutions || []).forEach(res => {
         const opt = document.createElement('option');
@@ -203,7 +206,7 @@
       detailPanel.setAttribute('aria-hidden','false');
       return;
     }
-    fetch(`/api/db/session/${id}`).then(r=>{
+    fetch(`${API_BASE}/api/db/session/${id}`).then(r=>{
       if (!r.ok) throw new Error('HTTP '+r.status);
       return r.json();
     }).then(row => {
@@ -256,7 +259,7 @@
       if (sortBy) { paramsObj.sortBy = sortBy; paramsObj.sortDir = sortDir; }
     }
     const params = new URLSearchParams(paramsObj);
-    fetch(`${endpoint}?${params.toString()}`)
+    fetch(`${API_BASE}${endpoint}?${params.toString()}`)
       .then(r=>r.json())
       .then(data => {
         const rows = data.rows || [];
