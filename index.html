@@ -4,281 +4,433 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta charset="UTF-8">
     <title>Atelier : Impact de la Résolution Vidéo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/index.css">
 </head>
 <body>
-    <div class="switch-container" id="darkModeSwitchContainer">
-        <label class="switch">
-            <input type="checkbox" id="darkModeToggle">
-            <span class="slider">
-                <span class="icon sun">☀️</span>
-                <span class="icon moon">🌙</span>
-            </span>
-        </label>
-    </div>
-
-    <!-- New: standalone container placed next to dark mode (absolute top-right offset) -->
-    <div id="extrasButtonContainer">
-        <button id="openExtrasButton" class="small-button" title="Ouvrir l'espace atelier">Espace Atelier</button>
-        <a href="donnees.html" class="small-button" title="Explorer les données" style="display:inline-block; text-decoration:none; line-height:1.2;">Données</a>
-    </div>
-
-    <div class="switch-container" id="licensedModeSwitchContainer" style="top: 55px;">
-        <label class="switch">
-            <input type="checkbox" id="licensedModeToggle">
-            <span class="slider"></span>
-        </label>
-        <span style="margin-left: 8px; font-size: 0.9em; color: var(--text-color-secondary);">Vidéos +</span>
-    </div>
-
-
-    <!-- Stepper navigation -->
-    <div class="stepper">
-        <div class="step">
-            <div class="step-circle active" data-tab="introduction">1</div>
-            <div class="step-title">Introduction</div>
-        </div>
-        <div class="step">
-            <div class="step-circle" data-tab="videos">2</div>
-            <div class="step-title">Vidéos</div>
-        </div>
-        <div class="step">
-            <div class="step-circle" data-tab="resolutions">3</div>
-            <div class="step-title">Résolutions</div>
-        </div>
-        <div class="step">
-            <div class="step-circle" data-tab="streaming-quality">4</div>
-            <div class="step-title">Plateformes</div>
-        </div>
-        <div class="step">
-            <div class="step-circle" data-tab="sensibilisation">5</div>
-            <div class="step-title">Sensibilisation</div>
-        </div>
-        <div class="step-progress-bar"></div>
-    </div>
-
-    <div class="navigation-image">
-        <img id="logoEnHautGauche" src="img/Figure_2.png" alt="Illustration" />
-    </div>
-
-    <div class="navigation-buttons">
-        <button id="prevButton">◀ Retour</button>
-        <button id="nextButton">Suivant ▶</button>
-    </div>
-
-    <div id="introduction" class="tab-content">
-        <section id="introduction1">
-            <h2>Introduction à l'Atelier</h2>
-            <p>Bienvenue à notre atelier consacré à un sujet crucial : l'impact de nos choix de résolution vidéo sur l'empreinte carbone d'Internet. À l'ère du numérique, la consommation de contenu en ligne, qu'il s'agisse de vidéos, de films ou de streaming en direct, connaît une croissance exponentielle. Cependant, ce plaisir a un coût environnemental souvent méconnu.</p>
-            <p>Au cours de cet atelier, nous explorerons comment le choix de la résolution vidéo peut influencer la consommation d'énergie et, par conséquent, les émissions de gaz à effet de serre. Nous discuterons des différentes résolutions, de leur impact sur l'environnement, et des actions simples que chacun de nous peut entreprendre pour réduire notre empreinte carbone numérique.</p>
-            <p>Rejoignez-nous pour une session interactive et informative qui vous permettra de mieux comprendre comment nos choix en matière de vidéo peuvent contribuer à un avenir plus durable !</p>
-            <button id="readTextButton">Lire le texte</button>
-            <button id="stopTextButton">Arrêter la lecture</button>
-        </section>
-    </div>
-
-    <div id="resolutions" class="tab-content">
-        <section id="resolutions1">
-            <h2>Comprendre les Résolutions Vidéo</h2>
-            <p>La résolution d'une vidéo fait référence au nombre de pixels qui composent l'image. Plus la résolution est élevée, plus la qualité d'image est claire et détaillée. Cependant, une résolution plus élevée nécessite également plus de bande passante, ce qui peut augmenter l'impact carbone associé à la diffusion de contenu.</p>
-            <h3>Voici quelques résolutions courantes :</h3>
-            <ul>
-                <li><strong>480p (SD)</strong>: Qualité standard, environ 0,7 Go/heure. Idéale pour des connexions Internet plus lentes.</li>
-                <li><strong>720p (HD)</strong>: Haute définition, environ 1,5 Go/heure. Bon compromis entre qualité et utilisation de données.</li>
-                <li><strong>1080p (Full HD)</strong>: Très haute définition, environ 3 Go/heure. Excellente qualité, mais nécessite une bande passante élevée.</li>
-                <li><strong>4K (Ultra HD) – 2160p </strong> : Résolution quatre fois supérieure au Full HD, avec des détails beaucoup plus fins. C'est la norme pour les téléviseurs 4K, environ 7 à 10 Go/heure </li>
-            </ul>
-            <p>Avant de visionner les vidéos, réfléchissez à la résolution que vous choisissez et à son impact potentiel sur l'environnement.</p>
-            <section id="data-usage">
-                <h4>Comprendre le Go/heure</h4>
-                <p>Le Go/heure indique la quantité de données (en gigaoctets) qu'une vidéo nécessite pour être diffusée pendant une heure. Cela aide à comprendre l'impact de la qualité vidéo sur la bande passante utilisée et, par conséquent, sur l'empreinte carbone associée à la diffusion de contenu en ligne.</p>
-                <br><br>
-                <button type="button" onclick="retourFormulaire()">Retour au formulaire ➡️</button>
-            </section>
-        </section>
-    </div>
-
-    <div id="streaming-quality" class="tab-content">
-        <section id="streaming-quality1">
-            <h2>Niveaux de Qualité Proposés par les Principales Plateformes de Streaming</h2>
-            <h3>Tableau des Résolutions par Diffuseur de Contenus</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Diffuseur\Résolution</th>
-                        <th>SD (480p)</th>
-                        <th>HD (720p)</th>
-                        <th>Full HD (1080p)</th>
-                        <th>4K (2160p)</th>
-                        <th>8K (4320p)</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Prime Video</td>
-                        <td><span class="icon-check"></span></td>
-                        <td><span class="icon-check"></span></td>
-                        <td><span class="icon-check"></span></td>
-                        <td><span class="icon-check"></span></td>
-                        <td><span class="icon-cross"></span></td>
-                    </tr>
-                    <tr>
-                        <td>YouTube</td>
-                        <td><span class="icon-check"></span></td>
-                        <td><span class="icon-check"></span></td>
-                        <td><span class="icon-check"></span></td>
-                        <td><span class="icon-check"></span></td>
-                        <td><span class="icon-check"></span></td>
-                    </tr>
-                    <tr>
-                        <td>Disney+</td>
-                        <td><span class="icon-check"></span></td>
-                        <td><span class="icon-check"></span></td>
-                        <td><span class="icon-check"></span></td>
-                        <td><span class="icon-check"></span></td>
-                        <td><span class="icon-cross"></span></td>
-                    </tr>
-                    <tr>
-                        <td>Apple TV+</td>
-                        <td><span class="icon-check"></span></td>
-                        <td><span class="icon-check"></span></td>
-                        <td><span class="icon-check"></span></td>
-                        <td><span class="icon-cross"></span></td>
-                        <td><span class="icon-cross"></span></td>
-                    </tr>
-                </tbody>
-            </table>
-        </section>
-    </div>
-
-    <div id="videos" class="tab-content">
-        <section id="videos1">
-            <div id="modeEnfantSwitchContainer">
-                <label class="switch" style="float: right;">
-                    <input type="checkbox" id="modeSwitch">
-                    <span class="slider">
-                    </span>
-                </label>
-                <span id="modeText" class="mode-text">Mode adulte</span>
+    <!-- Hero Header Section -->
+    <header class="hero-header">
+        <div class="hero-background">
+            <div class="hero-gradient-overlay"></div>
+            <div class="floating-shapes">
+                <div class="shape shape-1"></div>
+                <div class="shape shape-2"></div>
+                <div class="shape shape-3"></div>
             </div>
-
-            <h2>Vidéos à Visionner</h2>
-            <p>
-                Vous allez visionner la même vidéo dans deux résolutions différentes, tirées au hasard. 
-                Une fois la vidéo terminée, nous vous inviterons à donner votre retour sur votre expérience 
-                de visionnage. Cela nous aidera à comprendre l'impact des différentes résolutions.
-            </p>
-            <div id="modeStatus" style="font-weight: bold; margin: 10px;"></div>
-            <div id="userInputGroup">
-                <div id="fields">
-                    <section id="feedback1" style="display: block;">
-                    <form id="userForm">
-                        <input type="text" id="pseudo" name="pseudo" required placeholder="Pseudo">
-                    </form>
-                    </section>
-                    <section id="tempsSection">
-                        <select id="temps" name="temps" required >
-                            <option value="1">1 minute</option>
-                            <option value="2">2 minutes</option>
-                            <option value="3">3 minutes</option>
-                            <option value="4">4 minutes</option>
-                            <option value="5">5 minutes</option>
-                        </select>
-                    </section>
-                </div>               
-                <button id="startButton">Commencer</button>
+        </div>
+        
+        <div class="header-top-bar">
+            <div class="logo-container">
+                <img id="logoEnHautGauche" src="img/Figure_2.png" alt="Terra Numerica" />
             </div>
             
-            <div class="video-container">
-                <video id="videoPlayer" width="640" height="360" controls>
-                    <source id="videoSource" src="Video/video4k1.mp4" type="video/mp4">
-                    Votre navigateur ne supporte pas la vidéo.
-                </video>
-                <div id="transitionScreen" style="display: none;">
-                    <p id="transitionText" style="color: white;"></p>
+            <div class="header-actions">
+                <div id="extrasButtonContainer">
+                    <button id="openExtrasButton" class="header-btn" title="Ouvrir l'espace atelier">
+                        <span class="btn-icon">🎯</span>
+                        <span class="btn-text">Espace Atelier</span>
+                    </button>
+                    <a href="donnees.html" class="header-btn" title="Explorer les données">
+                        <span class="btn-icon">📊</span>
+                        <span class="btn-text">Données</span>
+                    </a>
+                </div>
+                
+                <div id="licensedModeSwitchContainer" class="switch-wrapper">
+                    <label class="switch">
+                        <input type="checkbox" id="licensedModeToggle">
+                        <span class="slider"></span>
+                    </label>
+                    <span class="switch-label">Vidéos +</span>
+                </div>
+                
+                <div id="darkModeSwitchContainer" class="switch-wrapper">
+                    <label class="switch">
+                        <input type="checkbox" id="darkModeToggle">
+                        <span class="slider">
+                            <span class="icon sun">☀️</span>
+                            <span class="icon moon">🌙</span>
+                        </span>
+                    </label>
                 </div>
             </div>
+        </div>
 
-            <!-- Statistiques de satisfaction pour la vidéo en cours -->
-            <section class="stats-section" style="margin-top: 16px;">
-                <h2 style="margin-top:0;">Statistiques de satisfaction pour cette vidéo</h2>
-                <div id="satisfaction-container-player" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); gap: 1rem; width:100%; margin-top:1rem;"></div>
+        <div class="hero-content">
+            <h1 class="hero-title">
+                <span class="title-accent">Impact</span> de la Résolution Vidéo
+            </h1>
+            <p class="hero-subtitle">Découvrez comment vos choix de streaming influencent notre planète</p>
+        </div>
+    </header>
+
+    <!-- Stepper navigation -->
+    <nav class="stepper-container">
+        <div class="stepper">
+            <div class="step">
+                <div class="step-circle active" data-tab="introduction">
+                    <span class="step-number">1</span>
+                    <span class="step-icon">📖</span>
+                </div>
+                <div class="step-title">Introduction</div>
+            </div>
+            <div class="step">
+                <div class="step-circle" data-tab="videos">
+                    <span class="step-number">2</span>
+                    <span class="step-icon">🎬</span>
+                </div>
+                <div class="step-title">Vidéos</div>
+            </div>
+            <div class="step">
+                <div class="step-circle" data-tab="resolutions">
+                    <span class="step-number">3</span>
+                    <span class="step-icon">📺</span>
+                </div>
+                <div class="step-title">Résolutions</div>
+            </div>
+            <div class="step">
+                <div class="step-circle" data-tab="streaming-quality">
+                    <span class="step-number">4</span>
+                    <span class="step-icon">📡</span>
+                </div>
+                <div class="step-title">Plateformes</div>
+            </div>
+            <div class="step">
+                <div class="step-circle" data-tab="sensibilisation">
+                    <span class="step-number">5</span>
+                    <span class="step-icon">🌱</span>
+                </div>
+                <div class="step-title">Sensibilisation</div>
+            </div>
+            <div class="step-progress-bar"></div>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="main-content-wrapper">
+        <div class="navigation-buttons">
+            <button id="prevButton" class="nav-btn nav-btn-prev">
+                <span class="nav-icon">◀</span>
+                <span class="nav-text">Retour</span>
+            </button>
+            <button id="nextButton" class="nav-btn nav-btn-next">
+                <span class="nav-text">Suivant</span>
+                <span class="nav-icon">▶</span>
+            </button>
+        </div>
+
+        <div id="introduction" class="tab-content">
+            <section id="introduction1" class="content-card">
+                <div class="card-header">
+                    <span class="card-icon">🌍</span>
+                    <h2>Introduction à l'Atelier</h2>
+                </div>
+                <div class="card-body">
+                    <p class="intro-lead">Bienvenue à notre atelier consacré à un sujet crucial : <strong>l'impact de nos choix de résolution vidéo sur l'empreinte carbone d'Internet</strong>.</p>
+                    <p>À l'ère du numérique, la consommation de contenu en ligne, qu'il s'agisse de vidéos, de films ou de streaming en direct, connaît une croissance exponentielle. Cependant, ce plaisir a un coût environnemental souvent méconnu.</p>
+                    <p>Au cours de cet atelier, nous explorerons comment le choix de la résolution vidéo peut influencer la consommation d'énergie et, par conséquent, les émissions de gaz à effet de serre.</p>
+                    
+                    <div class="feature-grid">
+                        <div class="feature-item">
+                            <span class="feature-icon">📊</span>
+                            <span class="feature-text">Comparer les résolutions</span>
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-icon">🔬</span>
+                            <span class="feature-text">Analyser l'impact</span>
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-icon">💡</span>
+                            <span class="feature-text">Adopter les bonnes pratiques</span>
+                        </div>
+                    </div>
+                    
+                    <div class="audio-controls">
+                        <button id="readTextButton" class="audio-btn">
+                            <span class="audio-icon">🔊</span> Lire le texte
+                        </button>
+                        <button id="stopTextButton" class="audio-btn audio-btn-stop">
+                            <span class="audio-icon">⏹️</span> Arrêter
+                        </button>
+                    </div>
+                </div>
             </section>
-        </section>
-    </div>
+        </div>
 
-    <div id="sensibilisation" class="tab-content">
-        <section id="sensibilisation1">
-            <h2>Sensibilisation à l'Empreinte Carbone du Streaming Vidéo</h2>
-            <p>Une vidéo qui consomme environ 1 kg de CO2 équivaut à de nombreux impacts environnementaux. Pour mettre cela en perspective :</p>
-            <ul>
-                <li><strong>Conduite d'une voiture :</strong> 1 kg de CO2 est approximativement l'équivalent des émissions de CO2 produites par un trajet de 4 à 5 km en voiture, selon le type de véhicule.</li>
-                <li><strong>Émissions d'une chaudière :</strong> Cela correspond également à la quantité de CO2 émise par le chauffage d'un foyer pendant une heure en hiver.</li>
-                <li><strong>Impact sur l'environnement :</strong> Si des millions de personnes choisissent de regarder des vidéos en haute définition, cela peut rapidement se traduire par des milliers de tonnes de CO2 ajoutées à l'atmosphère, contribuant au changement climatique.</li>
-            </ul>
-        </section>
-        <section>
-            <h2>Résultats des Statistiques </h2>
-            <div class="graphique">
-                <img src="img/Figure_1.png" class="petite-image" alt="Graphique des résolutions les plus confondues">
-            </div>
-            <div class="explication">
-                <p>
-                    Le graphique ci-dessus montre les résolutions vidéo les plus fréquemment confondues par les utilisateurs. Par exemple, la première confusion présente la résolution <span class="highlight">420*720</span> comme étant la plus courante. Cependant, la résolution réelle de la vidéo est <span class="highlight">480</span>, tandis que l'utilisateur pense qu'il regarde une vidéo en <span class="highlight">720p</span>.
-                </p>
-                <p>
-                    Cette confusion est courante car les utilisateurs associent souvent des résolutions plus élevées (comme 720p) à une meilleure qualité d'image. Pourtant, dans de nombreux cas, une résolution plus basse (comme 480p) peut offrir une qualité d'image presque identique à l'œil nu tout en consommant beaucoup moins de données et d'énergie.
-                </p>
-                <p>
-                    En réduisant la résolution de 720p à 480p, vous pouvez économiser de la bande passante et réduire votre empreinte carbone sans sacrifier la qualité de visionnage. Chaque petit geste compte pour réduire l'impact environnemental du streaming vidéo.
-                </p>
-                <p>
-                    Nous vous encourageons donc à considérer l'impact environnemental de chaque vidéo regardée et à choisir des résolutions adaptées à votre besoin réel, en gardant à l'esprit que la qualité vidéo ne dépend pas toujours de la résolution la plus élevée.
-                </p>
-                <p>Chaque geste compte. En choisissant des résolutions plus basses pour le streaming, nous pouvons tous contribuer à réduire notre empreinte carbone collective.</p>
-            </div>
-        </section>
-    </div>
+        <div id="resolutions" class="tab-content">
+            <section id="resolutions1" class="content-card">
+                <div class="card-header">
+                    <span class="card-icon">📺</span>
+                    <h2>Comprendre les Résolutions Vidéo</h2>
+                </div>
+                <div class="card-body">
+                    <p>La résolution d'une vidéo fait référence au nombre de pixels qui composent l'image. Plus la résolution est élevée, plus la qualité d'image est claire et détaillée. Cependant, une résolution plus élevée nécessite également plus de bande passante.</p>
+                    
+                    <h3>Résolutions courantes :</h3>
+                    <div class="resolution-cards">
+                        <div class="resolution-card res-sd">
+                            <div class="res-badge">SD</div>
+                            <div class="res-name">480p</div>
+                            <div class="res-data">~0,7 Go/h</div>
+                            <div class="res-desc">Qualité standard</div>
+                        </div>
+                        <div class="resolution-card res-hd">
+                            <div class="res-badge">HD</div>
+                            <div class="res-name">720p</div>
+                            <div class="res-data">~1,5 Go/h</div>
+                            <div class="res-desc">Haute définition</div>
+                        </div>
+                        <div class="resolution-card res-fhd">
+                            <div class="res-badge">FHD</div>
+                            <div class="res-name">1080p</div>
+                            <div class="res-data">~3 Go/h</div>
+                            <div class="res-desc">Full HD</div>
+                        </div>
+                        <div class="resolution-card res-4k">
+                            <div class="res-badge">4K</div>
+                            <div class="res-name">2160p</div>
+                            <div class="res-data">~7-10 Go/h</div>
+                            <div class="res-desc">Ultra HD</div>
+                        </div>
+                    </div>
+                    
+                    <section id="data-usage" class="info-box">
+                        <h4>💡 Comprendre le Go/heure</h4>
+                        <p>Le Go/heure indique la quantité de données qu'une vidéo nécessite pour être diffusée pendant une heure. Cela aide à comprendre l'impact de la qualité vidéo sur la bande passante utilisée.</p>
+                        <button type="button" class="btn-secondary" onclick="retourFormulaire()">Retour au formulaire ➡️</button>
+                    </section>
+                </div>
+            </section>
+        </div>
+
+        <div id="streaming-quality" class="tab-content">
+            <section id="streaming-quality1" class="content-card">
+                <div class="card-header">
+                    <span class="card-icon">📡</span>
+                    <h2>Niveaux de Qualité par Plateforme</h2>
+                </div>
+                <div class="card-body">
+                    <div class="table-container">
+                        <table class="quality-table">
+                            <thead>
+                                <tr>
+                                    <th>Plateforme</th>
+                                    <th>SD (480p)</th>
+                                    <th>HD (720p)</th>
+                                    <th>Full HD</th>
+                                    <th>4K</th>
+                                    <th>8K</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="platform-name">
+                                        <span class="platform-icon">🎬</span> Prime Video
+                                    </td>
+                                    <td><span class="icon-check">✓</span></td>
+                                    <td><span class="icon-check">✓</span></td>
+                                    <td><span class="icon-check">✓</span></td>
+                                    <td><span class="icon-check">✓</span></td>
+                                    <td><span class="icon-cross">✗</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="platform-name">
+                                        <span class="platform-icon">▶️</span> YouTube
+                                    </td>
+                                    <td><span class="icon-check">✓</span></td>
+                                    <td><span class="icon-check">✓</span></td>
+                                    <td><span class="icon-check">✓</span></td>
+                                    <td><span class="icon-check">✓</span></td>
+                                    <td><span class="icon-check">✓</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="platform-name">
+                                        <span class="platform-icon">🏰</span> Disney+
+                                    </td>
+                                    <td><span class="icon-check">✓</span></td>
+                                    <td><span class="icon-check">✓</span></td>
+                                    <td><span class="icon-check">✓</span></td>
+                                    <td><span class="icon-check">✓</span></td>
+                                    <td><span class="icon-cross">✗</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="platform-name">
+                                        <span class="platform-icon">🍎</span> Apple TV+
+                                    </td>
+                                    <td><span class="icon-check">✓</span></td>
+                                    <td><span class="icon-check">✓</span></td>
+                                    <td><span class="icon-check">✓</span></td>
+                                    <td><span class="icon-cross">✗</span></td>
+                                    <td><span class="icon-cross">✗</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <div id="videos" class="tab-content">
+            <section id="videos1" class="content-card">
+                <div class="card-header">
+                    <span class="card-icon">🎬</span>
+                    <h2>Vidéos à Visionner</h2>
+                    <div id="modeEnfantSwitchContainer" class="mode-switch-inline">
+                        <span id="modeText" class="mode-text">Mode adulte</span>
+                        <label class="switch">
+                            <input type="checkbox" id="modeSwitch">
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <p class="video-intro">
+                        Vous allez visionner la même vidéo dans deux résolutions différentes, tirées au hasard. 
+                        Une fois la vidéo terminée, donnez votre retour sur votre expérience de visionnage.
+                    </p>
+                    
+                    <div id="modeStatus" class="mode-status"></div>
+                    
+                    <div id="userInputGroup" class="user-input-section">
+                        <div id="fields" class="input-fields">
+                            <section id="feedback1" class="input-group">
+                                <form id="userForm">
+                                    <input type="text" id="pseudo" name="pseudo" required placeholder="Entrez votre pseudo" class="input-field">
+                                </form>
+                            </section>
+                            <section id="tempsSection" class="input-group">
+                                <select id="temps" name="temps" required class="select-field">
+                                    <option value="1">1 minute</option>
+                                    <option value="2">2 minutes</option>
+                                    <option value="3">3 minutes</option>
+                                    <option value="4">4 minutes</option>
+                                    <option value="5">5 minutes</option>
+                                </select>
+                            </section>
+                        </div>               
+                        <button id="startButton" class="btn-primary btn-large">
+                            <span class="btn-icon">▶</span> Commencer
+                        </button>
+                    </div>
+                    
+                    <div class="video-container">
+                        <video id="videoPlayer" width="640" height="360" controls>
+                            <source id="videoSource" src="Video/video4k1.mp4" type="video/mp4">
+                            Votre navigateur ne supporte pas la vidéo.
+                        </video>
+                        <div id="transitionScreen" style="display: none;">
+                            <p id="transitionText"></p>
+                        </div>
+                    </div>
+
+                    <section class="stats-section">
+                        <h3>📊 Statistiques de satisfaction pour cette vidéo</h3>
+                        <div id="satisfaction-container-player"></div>
+                    </section>
+                </div>
+            </section>
+        </div>
+
+        <div id="sensibilisation" class="tab-content">
+            <section id="sensibilisation1" class="content-card">
+                <div class="card-header">
+                    <span class="card-icon">🌱</span>
+                    <h2>Sensibilisation à l'Empreinte Carbone</h2>
+                </div>
+                <div class="card-body">
+                    <div class="impact-highlight">
+                        <div class="impact-number">1 kg</div>
+                        <div class="impact-label">de CO₂ par vidéo haute résolution</div>
+                    </div>
+                    
+                    <div class="impact-cards">
+                        <div class="impact-card">
+                            <span class="impact-icon">🚗</span>
+                            <h4>Conduite automobile</h4>
+                            <p>Équivalent à 4-5 km en voiture</p>
+                        </div>
+                        <div class="impact-card">
+                            <span class="impact-icon">🏠</span>
+                            <h4>Chauffage domestique</h4>
+                            <p>1 heure de chauffage en hiver</p>
+                        </div>
+                        <div class="impact-card">
+                            <span class="impact-icon">🌍</span>
+                            <h4>Impact collectif</h4>
+                            <p>Des milliers de tonnes de CO₂</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <section class="content-card">
+                <div class="card-header">
+                    <span class="card-icon">📈</span>
+                    <h2>Résultats des Statistiques</h2>
+                </div>
+                <div class="card-body">
+                    <div class="stats-visualization">
+                        <div class="graphique">
+                            <img src="img/Figure_1.png" class="stats-image" alt="Graphique des résolutions">
+                        </div>
+                        <div class="explication">
+                            <p>
+                                Le graphique montre les résolutions vidéo les plus fréquemment confondues. 
+                                Par exemple, la résolution <span class="highlight">480p</span> est souvent 
+                                perçue comme du <span class="highlight">720p</span>.
+                            </p>
+                            <div class="tip-box">
+                                <span class="tip-icon">💡</span>
+                                <p>En réduisant la résolution de 720p à 480p, vous économisez de la bande passante 
+                                et réduisez votre empreinte carbone sans sacrifier la qualité perçue.</p>
+                            </div>
+                            <p class="cta-text">
+                                <strong>Chaque geste compte.</strong> En choisissant des résolutions adaptées, 
+                                nous contribuons tous à un avenir plus durable.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
 
     <!-- POPUP FEEDBACK QUIZ -->
     <div id="quizPopup" class="popup-overlay" style="display: none;">
-      <div class="popup-box">
-        <div id="quizStepper"></div>
-        <div id="quizQuestionContainer">
-          <div id="quizProgress"></div>
-          <div id="quizQuestion"></div>
-          <div id="quizAnswers"></div>
-        </div>
-        <div class="quiz-buttons">
-          <button id="quizBackBtn" style="display:none;">◀ Précédent</button>
-          <button id="quizSubmitBtn" style="display:none;background:#3ca745;color:#fff;font-weight:bold;border:none;padding:11px 26px;border-radius:8px;font-size:1em;box-shadow:0 1px 8px #80c95e22;cursor:pointer;">Soumettre</button>
-        </div>
-      </div>
-    </div>
-
-    <div id="passwordPopup" class="popup-overlay" style="display: none;">
-        <div class="popup-box" style="max-width: 320px;">
-            <h3 style="margin-top:0; text-align:center;">Accès au contenu étendu</h3>
-            <p style="font-size: 0.9em; text-align:center; color: var(--text-color-secondary);">Veuillez entrer le mot de passe pour inclure toutes les vidéos.</p>
-            <input type="password" id="passwordInput" placeholder="Mot de passe" style="width: 100%; padding: 10px; font-size: 1em; margin-bottom: 1rem; border-radius: 5px; border: 1px solid var(--border-color-light);">
-            <div class="quiz-buttons" style="justify-content: space-between;">
-                <button id="passwordCancelBtn" style="background: #eee; color: #333;">Annuler</button>
-                <button id="passwordSubmitBtn">Valider</button>
+        <div class="popup-box quiz-popup-box">
+            <div id="quizStepper"></div>
+            <div id="quizQuestionContainer">
+                <div id="quizProgress"></div>
+                <div id="quizQuestion"></div>
+                <div id="quizAnswers"></div>
+            </div>
+            <div class="quiz-buttons">
+                <button id="quizBackBtn" class="quiz-btn quiz-btn-back" style="display:none;">◀ Précédent</button>
+                <button id="quizSubmitBtn" class="quiz-btn quiz-btn-submit" style="display:none;">Soumettre</button>
             </div>
         </div>
     </div>
 
-    
+    <div id="passwordPopup" class="popup-overlay" style="display: none;">
+        <div class="popup-box password-popup-box">
+            <h3>🔒 Accès au contenu étendu</h3>
+            <p>Veuillez entrer le mot de passe pour inclure toutes les vidéos.</p>
+            <input type="password" id="passwordInput" placeholder="Mot de passe" class="input-field">
+            <div class="quiz-buttons">
+                <button id="passwordCancelBtn" class="quiz-btn quiz-btn-cancel">Annuler</button>
+                <button id="passwordSubmitBtn" class="quiz-btn quiz-btn-submit">Valider</button>
+            </div>
+        </div>
+    </div>
 
-    <!-- Scripts réorganisés et chargés dans le bon ordre -->
+    <!-- Scripts -->
     <script src="chart.umd.js"></script>
     <script src="assets/js/config.js"></script>
     <script src="assets/js/api.js"></script>
-    <!-- Réutilisation des helpers graphiques de la page résultats -->
     <script src="assets/js/Resultats/graphique.js"></script>
-    <!-- Nouveau: rendu des stats sous le lecteur vidéo -->
     <script src="assets/js/Index/stats.js"></script>
-    <!-- Attention: dossiers sensibles à la casse sur Linux (Index, pas index) -->
     <script src="assets/js/Index/ui.js"></script>
     <script src="assets/js/Index/player.js"></script>
     <script src="assets/js/Index/quiz.js"></script>
