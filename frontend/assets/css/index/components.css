@@ -1,0 +1,800 @@
+/*
+   Here live the reusable bits and bobs.
+   Buttons, inputs, cards, switches - all the little UI elements
+   that we use throughout the page are styled here.
+*/
+
+/* ========================================
+   BUTTONS
+   ======================================== */
+
+.header-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 16px;
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    color: #fff;
+    font-size: 0.9em;
+    font-weight: 500;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.header-btn:hover {
+    background: rgba(255, 255, 255, 0.25);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.header-btn .btn-icon {
+    font-size: 1.1em;
+}
+
+.nav-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 28px;
+    background: var(--nav-button-bg);
+    color: #fff;
+    border: none;
+    border-radius: 14px;
+    font-size: 1em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+}
+
+.nav-btn:hover:not(:disabled) {
+    background: var(--nav-button-hover-bg);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 25px rgba(76, 175, 80, 0.4);
+}
+
+.nav-btn:disabled {
+    background: var(--nav-button-disabled-bg);
+    color: var(--nav-button-disabled-text);
+    cursor: not-allowed;
+    box-shadow: none;
+    transform: none;
+}
+
+.nav-btn-prev .nav-icon {
+    margin-right: 4px;
+}
+
+.nav-btn-next .nav-icon {
+    margin-left: 4px;
+}
+
+.btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 18px;
+    background: var(--accent-color);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.9em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 12px;
+}
+
+.btn-secondary:hover {
+    background: var(--accent-color-darker);
+}
+
+.btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 16px 32px;
+    background: var(--nav-button-bg);
+    color: #fff;
+    border: none;
+    border-radius: 14px;
+    font-size: 1.1em;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 20px rgba(76, 175, 80, 0.3);
+}
+
+.btn-primary:hover {
+    background: var(--nav-button-hover-bg);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 30px rgba(76, 175, 80, 0.4);
+}
+
+.btn-large {
+    width: 100%;
+    max-width: 300px;
+}
+
+.small-button {
+    background: var(--nav-button-bg);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 6px 10px;
+    font-size: 0.9em;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+.small-button:hover {
+    background: var(--nav-button-hover-bg);
+}
+
+button,
+input[type="submit"] {
+    padding: 10px 20px;
+    background-color: var(--accent-color);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background 0.3s;
+}
+button:hover,
+input[type="submit"]:hover {
+    background-color: var(--accent-color-darker);
+}
+
+.navigation-buttons {
+    width: 100%;
+    max-width: 950px;
+    display: flex;
+    justify-content: space-between;
+    margin: 0 auto 20px auto; /* Reduced top margin to move buttons higher */
+    padding: 0 40px;
+    box-sizing: border-box;
+}
+
+.navigation-buttons button {
+    padding: 14px 32px;
+    font-size: 15px;
+    font-weight: 600;
+    background: linear-gradient(135deg, var(--accent-color), var(--accent-color-darkest));
+    color: white;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.navigation-buttons button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s;
+}
+
+.navigation-buttons button:hover::before {
+    left: 100%;
+}
+
+.navigation-buttons button:hover {
+    background: linear-gradient(135deg, var(--accent-color-darker), var(--accent-color));
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+}
+
+.navigation-buttons button:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 10px rgba(76, 175, 80, 0.3);
+}
+
+.navigation-buttons button:disabled {
+    background: linear-gradient(135deg, #ccc, #aaa);
+    color: #666;
+    cursor: not-allowed;
+    box-shadow: none;
+    transform: none;
+}
+
+.navigation-buttons button:disabled::before {
+    display: none;
+}
+
+/* ========================================
+   INPUTS & SWITCHES
+   ======================================== */
+
+.input-field,
+.select-field {
+    width: 100%;
+    padding: 14px 18px;
+    border: 2px solid var(--border-color-light);
+    border-radius: 12px;
+    font-size: 1em;
+    background: var(--card-bg);
+    color: var(--text-color-primary);
+    transition: all 0.3s ease;
+}
+
+.input-field:focus,
+.select-field:focus {
+    outline: none;
+    border-color: var(--accent-color);
+    box-shadow: 0 0 0 4px rgba(76, 175, 80, 0.1);
+}
+
+.switch-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+}
+
+.switch-label {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.85em;
+    font-weight: 500;
+}
+
+/* ----- SWITCH STYLES (generic, applies to both enfant and dark mode switch) ----- */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 54px; 
+    height: 28px;
+}
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: var(--switch-track-bg); /* General default track */
+    transition: .4s;
+    border-radius: 28px;
+}
+.slider:before { /* This is the knob */
+    position: absolute;
+    content: "";
+    height: 20px; width: 20px;
+    left: 4px; bottom: 4px;
+    background-color: var(--switch-knob-bg);
+    transition: .4s;
+    border-radius: 50%;
+    z-index: 2;
+}
+
+/* --- Styles for Mode Enfant Switch (Green Accent) --- */
+/* Container for mode enfant switch for specific alignment if needed */
+#modeEnfantSwitchContainer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    width: 100%;
+    margin-bottom: 8px;
+    gap: 12px;
+}
+
+/* Enfant Mode (Unchecked - Default for this switch) */
+#modeEnfantSwitchContainer .switch input:not(:checked) + .slider {
+    background-color: var(--accent-color); /* Green track for enfant mode */
+}
+#modeEnfantSwitchContainer .switch input:not(:checked) + .slider:before {
+    background-color: var(--accent-color-light); /* Dark green knob */
+    /* transform: translateX(0px); is default */
+}
+
+/* Adulte Mode (Checked for this switch) */
+#modeEnfantSwitchContainer .switch input:checked + .slider {
+    background-color: var(--accent-color-light); /* Light green track for adult mode */
+}
+#modeEnfantSwitchContainer .switch input:checked + .slider:before {
+    transform: translateX(26px);
+    background-color: var(--accent-color-darkest); /* Dark green knob */
+}
+input:checked + .slider {
+    background-color: var(--accent-color);
+}
+input:checked + .slider:before {
+    transform: translateX(26px);
+}
+
+/* --- Styles for Dark Mode Switch --- */
+/* Light Mode (Unchecked - Default for this switch) */
+#darkModeSwitchContainer .switch input:not(:checked) + .slider {
+    background-color: var(--switch-track-bg); /* Uses general variable, e.g., #ccc in light, #555 in dark */
+}
+/* Dark Mode (Checked for this switch) */
+#darkModeSwitchContainer .switch input:checked + .slider {
+    background-color: var(--switch-active-track-bg); /* e.g., var(--accent-color) or a specific dark mode active color */
+}
+#darkModeSwitchContainer .switch input:checked + .slider:before {
+    transform: translateX(26px);
+}
+
+/* General Icon styling within any switch */
+.slider .icon {
+    position: absolute;
+    font-size: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    user-select: none;
+    transition: opacity .4s, color .4s;
+    color: var(--text-color-primary); /* Default icon color based on body text */
+}
+body.dark-mode .slider .icon { /* Ensure icons adapt if their base color needs to change more drastically */
+    color: var(--text-color-primary);
+}
+
+
+/* Icon visibility and color for Mode Enfant Switch */
+#modeEnfantSwitchContainer .slider .adult-icon { left: 7px; }
+#modeEnfantSwitchContainer .slider .child-icon { right: 7px; }
+
+/* Default (Enfant Mode - Unchecked) */
+#modeEnfantSwitchContainer .switch input:not(:checked) + .slider .child-icon {
+    opacity: 1;
+    color: #fff; /* White icon on colored (green) background */
+}
+#modeEnfantSwitchContainer .switch input:not(:checked) + .slider .adult-icon {
+    opacity: 0.35; /* Dimmed adult icon */
+}
+/* Adulte Mode (Checked) */
+#modeEnfantSwitchContainer .switch input:checked + .slider .adult-icon {
+    opacity: 1;
+    color: "var(--accent-color-darkest)"; /* Dark green icon on light green background */
+}
+#modeEnfantSwitchContainer .switch input:checked + .slider .child-icon {
+    opacity: 0.35; /* Dimmed child icon */
+}
+
+/* Icon visibility and color for Dark Mode Switch */
+#darkModeSwitchContainer .slider .sun { left: 6px; }
+#darkModeSwitchContainer .slider .moon { right: 6px; }
+
+/* Default (Light Mode - Unchecked) */
+#darkModeSwitchContainer .switch input:not(:checked) + .slider .sun {
+    opacity: 1;
+    color: var(--icon-sun-color);
+}
+#darkModeSwitchContainer .switch input:not(:checked) + .slider .moon {
+    opacity: 0.5;
+}
+/* Dark Mode (Checked) */
+#darkModeSwitchContainer .switch input:checked + .slider .moon {
+    opacity: 1;
+    color: var(--icon-moon-color);
+}
+#darkModeSwitchContainer .switch input:checked + .slider .sun {
+    opacity: 0.5;
+}
+
+
+/* Mode Enfant Switch text */
+.mode-text {
+    margin-left: 14px;
+    font-size: 1.04em;
+    font-weight: bold;
+    color: var(--accent-color-darkest); /* Default to adult text color, JS changes for enfant */
+    transition: color .2s;
+    letter-spacing: .01em;
+    min-width: 85px;
+    text-align: left;
+}
+
+#licensedModeSwitchContainer {
+    /* Reset positioning for popup context */
+    position: static;
+    top: auto;
+    right: auto;
+    z-index: auto;
+    display: flex;
+    align-items: center;
+}
+
+/* ========================================
+   CARDS
+   ======================================== */
+
+.content-card {
+    background: var(--card-bg);
+    border-radius: 20px;
+    box-shadow: var(--card-shadow);
+    margin-bottom: 24px;
+    overflow: hidden;
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+    border: 1px solid var(--border-color-light);
+}
+
+.content-card:hover {
+    box-shadow: var(--card-shadow-hover);
+}
+
+.card-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 24px 28px;
+    background: linear-gradient(135deg, var(--accent-color-light) 0%, rgba(200, 230, 201, 0.3) 100%);
+    border-bottom: 1px solid var(--border-color-light);
+    flex-wrap: wrap;
+}
+
+.card-icon {
+    font-size: 1.8em;
+}
+
+.card-header h2 {
+    margin: 0;
+    font-size: 1.5em;
+    font-weight: 700;
+    color: var(--text-color-primary);
+    flex: 1;
+}
+
+.card-body {
+    padding: 28px;
+}
+
+.intro-lead {
+    font-size: 1.15em;
+    color: var(--text-color-primary);
+    line-height: 1.7;
+    margin-bottom: 20px;
+}
+
+.feature-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 20px;
+    background: var(--table-row-even-bg);
+    border-radius: 12px;
+    border: 1px solid var(--border-color-light);
+}
+
+.feature-icon {
+    font-size: 1.5em;
+}
+
+.feature-text {
+    font-weight: 500;
+    color: var(--text-color-primary);
+}
+
+/* ========================================
+   TABLES
+   ======================================== */
+
+.table-container {
+    overflow-x: auto;
+    border-radius: 12px;
+    border: 1px solid var(--border-color-light);
+}
+
+.quality-table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 500px;
+}
+
+.quality-table thead th {
+    background: var(--table-header-bg);
+    padding: 16px 12px;
+    text-align: center;
+    font-weight: 600;
+    color: var(--text-color-primary);
+    border-bottom: 2px solid var(--border-color-medium);
+}
+
+.quality-table thead th:first-child {
+    text-align: left;
+    padding-left: 20px;
+}
+
+.quality-table tbody td {
+    padding: 14px 12px;
+    text-align: center;
+    border-bottom: 1px solid var(--border-color-light);
+}
+
+.quality-table tbody tr:hover {
+    background: var(--table-row-hover-bg);
+}
+
+.platform-name {
+    text-align: left !important;
+    padding-left: 20px !important;
+    font-weight: 600;
+}
+
+.platform-icon {
+    margin-right: 8px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    background-color: var(--card-bg); /* Ensure table bg matches card bg in dark mode */
+}
+th, td {
+    border: 1px solid var(--border-color-light);
+    padding: 8px;
+    text-align: left;
+    color: var(--text-color-primary); /* Ensure text color adapts */
+}
+th {
+    background-color: var(--table-header-bg);
+    font-weight: bold;
+}
+tr:nth-child(even) {
+    background-color: var(--table-row-even-bg);
+}
+tr:hover {
+    background-color: var(--table-row-hover-bg);
+}
+
+/* ========================================
+   INFO & TIP BOXES
+   ======================================== */
+
+.info-box {
+    background: linear-gradient(135deg, #fff8e1 0%, #fffde7 100%);
+    border: 1px solid #ffe082;
+    border-radius: 12px;
+    padding: 20px;
+    margin-top: 24px;
+}
+
+.info-box h4 {
+    margin: 0 0 12px 0;
+    color: #f57c00;
+}
+
+body.dark-mode .info-box {
+    background: linear-gradient(135deg, #3e2723 0%, #4e342e 100%);
+    border-color: #5d4037;
+}
+
+body.dark-mode .info-box h4 {
+    color: #ffb74d;
+}
+
+.tip-box {
+    display: flex;
+    gap: 12px;
+    padding: 16px;
+    background: var(--accent-color-light);
+    border-radius: 12px;
+    margin: 20px 0;
+    border-left: 4px solid var(--accent-color);
+}
+
+.tip-icon {
+    font-size: 1.5em;
+    flex-shrink: 0;
+}
+
+.tip-box p {
+    margin: 0;
+    font-size: 0.95em;
+}
+
+/* ========================================
+   BADGES & ICONS
+   ======================================== */
+
+.res-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    background: var(--accent-color);
+    color: #fff;
+    border-radius: 6px;
+    font-size: 0.75em;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.icon-check {
+    color: var(--accent-color);
+    font-weight: bold;
+    font-size: 1.2em;
+}
+
+.icon-cross {
+    color: #ef5350;
+    font-size: 1.1em;
+}
+
+.icon-check::before {
+    content: "\2713";
+    color: var(--accent-color-darkest);
+    font-size: 20px;
+}
+.icon-cross::before {
+    content: "\2715";
+    color: #e53e3e; /* This red might need a dark mode variant if too bright */
+    font-size: 20px;
+}
+
+/* ========================================
+   HEADER MENU POPUP
+   ======================================== */
+
+.menu-container {
+    position: relative;
+}
+
+.header-btn.icon-only {
+    padding: 0;
+    width: 44px;
+    justify-content: center;
+}
+
+.header-popup {
+    display: none;
+    position: absolute;
+    top: calc(100% + 12px); /* Ensure it's below the button */
+    right: 0;
+    width: 240px; /* Slightly wider */
+    background: var(--card-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--border-color-light);
+    border-radius: 16px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    z-index: 2000; /* Higher z-index to be on top of everything */
+    overflow: hidden;
+    animation: popupFadeIn 0.2s ease-out;
+    pointer-events: auto; /* Ensure clicks are registered */
+}
+
+.header-popup.show {
+    display: block;
+}
+
+@keyframes popupFadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.popup-content {
+    padding: 4px 0; /* Reduce padding */
+    display: flex;
+    flex-direction: column;
+    gap: 0; /* Remove gap, rely on padding */
+}
+
+.popup-item {
+    width: 100%;
+    position: relative; /* Ensure stacking context */
+}
+
+.popup-btn {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    padding: 12px 16px;
+    background: transparent;
+    border: none;
+    border-radius: 0; /* Remove radius for full width feel */
+    color: var(--text-color-primary);
+    font-size: 0.95em;
+    font-weight: 500;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    text-align: left;
+    box-sizing: border-box; /* Ensure padding is included in width */
+}
+
+.popup-btn:hover {
+    background: rgba(0, 0, 0, 0.1); /* Darker hover for better visibility */
+    transform: translateX(4px); /* Slight movement */
+}
+
+.dark-mode .popup-btn:hover {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.popup-btn .btn-icon {
+    font-size: 1.2em;
+    width: 24px;
+    text-align: center;
+}
+
+.popup-divider {
+    height: 1px;
+    background: var(--border-color-light);
+    margin: 4px 0; /* Full width divider */
+}
+
+.popup-switch.switch-wrapper {
+    background: transparent;
+    padding: 8px 16px;
+    justify-content: space-between;
+    width: 100%;
+    height: auto;
+    border: none; /* Remove border from switch wrapper in popup */
+    backdrop-filter: none; /* Remove blur in popup */
+}
+
+.popup-switch .switch-label {
+    color: var(--text-color-primary);
+    font-size: 0.95em;
+    order: -1; /* Label on the left */
+    margin: 0;
+    white-space: nowrap;
+}
+
+.popup-switch .switch {
+    margin: 0; /* Reset margin */
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+    .header-popup {
+        position: fixed;
+        top: auto;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        width: 100%;
+        margin: 0;
+        border-radius: 20px 20px 0 0;
+        border-bottom: none;
+        animation: popupSlideUp 0.3s ease-out;
+        z-index: 9999; /* Ensure it's on top of everything on mobile */
+    }
+
+    @keyframes popupSlideUp {
+        from { transform: translateY(100%); }
+        to { transform: translateY(0); }
+    }
+    
+    .popup-content {
+        padding: 16px 0;
+        gap: 0;
+    }
+    
+    .popup-btn {
+        padding: 16px 24px;
+        font-size: 1.1em;
+    }
+
+    .popup-switch.switch-wrapper {
+        padding: 16px 24px;
+    }
+}
+
+@media (max-width: 700px) {
+    .navigation-buttons { padding: 0 15px;} /* Slightly more padding */
+    .navigation-buttons button { padding: 10px 16px; font-size: 14px; } /* More padding for buttons */
+}
+
+@media (max-width: 540px) {
+    .navigation-buttons button { padding: 8px 10px; font-size: 13px; }
+    #modeEnfantSwitchContainer { gap: 8px; }
+    .mode-text { font-size: 0.9em; min-width: 70px; margin-left: 8px; }
+}

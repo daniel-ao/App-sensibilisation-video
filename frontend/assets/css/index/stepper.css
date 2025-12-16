@@ -1,0 +1,166 @@
+/*
+   This one is specific to the "Stepper" navigation.
+   You know, that progress bar thingy that shows you which step you're on?
+   Yeah, all the styles for that and the navigation buttons are right here.
+*/
+
+/* ========================================
+   STEPPER NAVIGATION
+   ======================================== */
+
+.stepper-container {
+    width: 100%;
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border-color-light);
+    padding: 20px 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+
+/* --------- Stepper / étapes --------- */
+.stepper {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin: 0 auto;
+    min-height: 80px;
+    width: 100%; 
+    max-width: 800px; 
+    padding: 0 30px;
+    box-sizing: border-box;
+}
+.step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    z-index: 1;
+}
+.step-circle {
+    width: 52px;
+    height: 52px;
+    background: var(--card-bg); 
+    border: 3px solid var(--border-color-medium); 
+    border-radius: 50%;
+    color: var(--accent-text-color); 
+    font-weight: 700;
+    font-size: 1.1em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+    transition: all 0.3s ease;
+    margin-bottom: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+.step-circle .step-number {
+    transition: all 0.3s ease;
+}
+
+.step-circle .step-icon {
+    position: absolute;
+    opacity: 0;
+    transform: scale(0.5);
+    transition: all 0.3s ease;
+    font-size: 1.3em;
+}
+
+.step-circle:hover .step-number {
+    opacity: 0;
+    transform: scale(0.5);
+}
+
+.step-circle:hover .step-icon {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.step-circle.active {
+    background: var(--accent-color);
+    border-color: var(--accent-color-darkest);
+    color: #fff;
+    transform: scale(1.1);
+    box-shadow: 0 6px 25px rgba(76, 175, 80, 0.4);
+}
+
+.step-circle.active .step-number {
+    opacity: 0;
+    transform: scale(0.5);
+}
+
+.step-circle.active .step-icon {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.step-circle.completed {
+    background: var(--accent-color-bright);
+    border-color: var(--accent-color);
+    color: #fff;
+}
+
+.step-title {
+    margin-top: 4px;
+    font-size: 0.9em;
+    color: var(--text-color-secondary);
+    text-align: center;
+    width: 80px;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+
+.step:has(.step-circle.active) .step-title {
+    color: var(--accent-color-darkest);
+    font-weight: 600;
+}
+
+.step-progress-bar {
+    position: absolute;
+    top: 24px;
+    left: 55px;
+    right: 55px;
+    height: 4px;
+    background: var(--border-color-light);
+    z-index: 0;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.step-progress-bar::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: var(--progress, 0%);
+    background: linear-gradient(90deg, var(--accent-color-bright), var(--accent-color-darkest));
+    border-radius: 4px;
+    transition: width 0.5s ease;
+}
+
+@media (max-width: 1000px) {
+    .stepper { padding: 0 10px; } /* Adjust stepper padding */
+    .step-title { font-size: 0.9em; width: 70px; line-height: 1.1; } /* Smaller titles, more space */
+    .step-circle { width: 36px; height: 36px; font-size: 1.1em; border-width: 2px;} /* Slightly larger circles */
+    .step-progress-bar { top: 16px; left: 18px; right: 18px; height: 6px; } /* Adjust bar for new circle size */
+}
+
+@media (max-width: 700px) {
+    .stepper { margin-top: 28px; margin-bottom: 20px; min-height: 70px;}
+    .step-title { font-size: 0.85em; width: 60px; }
+    .step-circle { width: 32px; height: 32px; font-size: 1em;}
+    .step-progress-bar { top: 14px; left: 16px; right: 16px;}
+}
+
+@media (max-width: 540px) {
+    .stepper { justify-content: space-around; } /* Change justification for very small screens if titles overlap */
+    .step-title { width: 50px; font-size: 0.8em; } /* Even smaller titles */
+}

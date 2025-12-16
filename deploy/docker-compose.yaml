@@ -1,0 +1,41 @@
+version: "3.9"
+
+services:
+  backend:
+
+    container_name: ${APP_ID}-backend
+
+    image: ${CI_REGISTRY_IMAGE}:${IMAGE_VERSION}
+    
+    build:
+      context: ../
+      dockerfile: backend/docker/Dockerfile
+
+    restart: unless-stopped
+    
+    env_file:
+      - .env
+
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik"
+
+      - "traefik.http.routers.${APP_ID}.rule=Host(`${API_HOSTNAME}`) && PathPrefix(`${API_PATH_PREFIX}`)"
+      - "traefik.http.routers.${APP_ID}.entrypoints=websecure"
+      - "traefik.http.routers.${APP_ID}.tls.certresolver=myresolver"
+
+      - "traefik.http.services.${APP_ID}.loadbalancer.server.port=${PORT}"
+      - "traefik.http.middlewares.${APP_ID}-strip.stripprefix.prefixes=${API_PATH_PREFIX}"
+      - "traefik.http.routers.${APP_ID}.middlewares=${APP_ID}-strip"
+
+    networks:
+      - traefik
+
+    volumes:
+      - ./data:/usr/src/app/data
+      
+      - ./videos:/usr/src/app/videos
+
+networks:
+  traefik:
+    external: true

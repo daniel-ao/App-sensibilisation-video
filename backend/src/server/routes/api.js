@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const csvHandler = require('../data/csvHandler');
+// On peut supprimer ces deux lignes si on n'utilise plus du tout CSV/JSON
+// const jsonHandler = require('../data/jsonHandler'); 
+// const csvHandler = require('../data/csvHandler'); 
 const videoService = require('../services/videoService');
 const statsService = require('../services/statsService');
 const dbService = require('../services/dbService');
@@ -12,8 +14,7 @@ router.get('/api/get-videos', (req, res) => {
 });
 
 router.get('/videos/resolutions/:baseVideoName', (req, res) => {
-    // CORRECTION : On décode le paramètre de l'URL pour gérer les caractères spéciaux.
-    const videoName = decodeURIComponent(req.params.baseVideoName);
+    const videoName = req.params.baseVideoName;
     const resolutions = videoService.getVideoResolutions(videoName);
     if (resolutions) {
         res.json(resolutions);
@@ -22,8 +23,8 @@ router.get('/videos/resolutions/:baseVideoName', (req, res) => {
     }
 });
 
-// --- Routes de Soumission ---
-router.post('/addUser', async (req, res) => {
+// --- Route d'Ajout (CORRIGÉE POUR SQLITE) ---
+router.post('/addUser', (req, res) => {
     const { user, videoPath1, resolution1, videoPath2, resolution2, QO1 } = req.body;
     if (!user || !resolution1 || !resolution2 || !QO1) {
         return res.status(400).json({ message: 'Champs obligatoires manquants.' });
@@ -44,7 +45,17 @@ router.post('/addUser', async (req, res) => {
             videoName2: video2Info.videoName, 
             timestamp: new Date().toISOString() 
         };
-        await csvHandler.appendToCsv(record);
+
+        // --- INSERTION DANS LA BDD ---
+        dbService.insertSession(record);
+        
+        // --- MISE À JOUR DU USER (SCORE/PRECISION) ---
+        // On s'assure que l'utilisateur existe dans la table users
+        dbService.ensureUser(user);
+        
+        // Note: Le calcul du score total se fait normalement par accumulation côté client et envoi via /saveScore,
+        // ou alors on pourrait le recalculer ici en SQL, mais pour l'instant on garde la logique existante :
+        // l'ajout de session est fait.
 
         res.json({ message: "Utilisateur ajouté avec succès!" });
     } catch (err) {
@@ -153,15 +164,13 @@ router.get('/precision_moyenne_globale', (req, res) => {
 });
 
 router.get('/stats/video-perception/:videoName', async (req, res) => {
-    // CORRECTION : On décode le paramètre de l'URL.
-    const videoName = decodeURIComponent(req.params.videoName);
+    const videoName = req.params.videoName;
     const data = await statsService.getVideoPerception(videoName);
     res.json(data);
 });
 
 router.get('/stats/satisfaction-by-video-device/:videoName', async (req, res) => {
-    // CORRECTION : On décode le paramètre de l'URL.
-    const videoName = decodeURIComponent(req.params.videoName);
+    const videoName = req.params.videoName;
     const data = await statsService.getSatisfactionByVideoAndDevice(videoName);
     res.json(data);
 });

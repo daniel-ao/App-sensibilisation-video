@@ -1,29 +1,53 @@
-# 🎥 Video Experience Tester
+# Application "Sensibilisation Vidéo"
 
-Ce projet est une application web permettant de tester la qualité de visionnage de vidéos en fonction de différentes résolutions. Les utilisateurs évaluent la fluidité, la qualité d’image et donnent leur ressenti via un formulaire de feedback.
+Ce projet est une application web interactive visant à sensibiliser les utilisateurs à l'impact de la résolution vidéo sur la consommation de données et l'empreinte carbone.
 
-## 🚀 Lancer le projet
+## Architecture du Projet
 
-1. Ouvre un terminal à la racine du projet.
-2. Lance le serveur Express :
+L'application est composée de deux parties distinctes :
 
-```bash
+1.  Frontend :
+    - Fichiers HTML, CSS, JS client.
+    - Servis par le serveur web global 'tngames' (Nginx).
+    - Localisation source : dossier 'frontend/'.
+
+2.  Backend :
+    - Localisation source : dossier 'backend/'.
+    - Configuration de déploiement : dossier 'deploy/'.
+
+## Structure des Répertoires (Déploiement)
+
+Sur le serveur de production, l'application respecte la structure suivante :
+
+1. Frontend
+    - Chemin serveur : "/srv/tngames/www-data/app-sensibilisation-video/"
+    - Contenu : 'index.html', 'assets/', 'img/', 'chart.umd.js', 'resultats.html'.
+
+2. Backend
+    - Chemin serveur : "/srv/sensibilisation-video-backend/"
+    - Contenu :
+        - docker-compose.yaml
+        - .env
+        - data/ : Sous-dossier contenant les fichiers de données persistants (data.csv, data.json).
+        - videos/ : Sous-dossier contenant les répertoires de médias.
 
 
+## Procédure de Construction (Build)
 
-node server/main.js
+L'image Docker du backend doit être construite et poussée sur le registre GitLab avant tout déploiement.
 
-## ⚙️ Configuration du projet
+Depuis la racine du projet :
 
-Ce projet utilise **Git LFS (Large File Storage)** pour stocker les fichiers vidéo (`.mp4`).
+1.  Se connecter au registre :
 
-Si tu clones le dépôt sans Git LFS, les vidéos apparaîtront comme de simples fichiers texte (pointeurs) au lieu des vraies vidéos.
+    docker login registry.gitlab.com
 
-### 🧭 Méthode correcte pour cloner le projet
+2.  Construire l'image :
 
-```bash
-# Installation de Git LFS (une seule fois sur ton ordinateur)
-git lfs install
+    docker build -t registry.gitlab.com/amirost/app-video:latest .
 
-# Puis cloner le dépôt
-git clone git@github.com:daniel-ao/App-sensibilisation-video.git
+    (Note : Utilise le Dockerfile situé dans `backend/docker/Dockerfile` via le contexte)
+
+3.  Publier l'image :
+
+    docker push registry.gitlab.com/amirost/app-video:latest

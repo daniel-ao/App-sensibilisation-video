@@ -1,0 +1,128 @@
+/*
+   This file is the "brain" of our styles. It holds all the CSS variables (custom properties).
+   Here we define our colors, fonts, spacing, and other design tokens.
+   Change a value here, and it updates everywhere! Magic.
+*/
+
+:root {
+    --bg-gradient-start: #f8faf8;
+    --bg-gradient-end: #e8f5e9;
+    --text-color-primary: #1a1a2e;
+    --text-color-secondary: #5a6275;
+    --accent-color: #4CAF50;
+    --accent-color-darker: #388e3c;
+    --accent-color-darkest: #2e7d32;
+    --accent-color-bright: #66bb6a;
+    --accent-color-light: #c8e6c9;
+    --accent-text-color: #2e7d32;
+    --border-color-light: #e0e0e0;
+    --border-color-medium: #a5d6a7;
+    --card-bg: #ffffff;
+    --card-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+    --card-shadow-hover: 0 20px 60px rgba(0, 0, 0, 0.12);
+    --table-header-bg: #f1f8e9;
+    --table-row-even-bg: #fafffe;
+    --table-row-hover-bg: #e8f5e9;
+    --progress-line-bg: #e0e0e0;
+    --progress-fill-gradient-start: var(--accent-color-bright);
+    --progress-fill-gradient-end: var(--accent-color-darkest);
+    --progress-btn-default-border: #c8e6c9;
+    --progress-btn-default-text: #81c784;
+    --progress-btn-default-bg: #fff;
+    --progress-label-default-text: #6c757d;
+    --progress-btn-completed-bg: var(--accent-color);
+    --progress-btn-completed-border: var(--accent-color-darkest);
+    --progress-btn-completed-text: #fff;
+    --progress-btn-active-bg: #fff;
+    --progress-btn-active-border: var(--accent-color-darkest);
+    --progress-btn-active-text: var(--accent-color-darkest);
+    --progress-btn-active-shadow: rgba(76, 175, 80, 0.3);
+    --progress-label-active-text: var(--accent-color-darkest);
+    --nav-button-bg: linear-gradient(135deg, var(--accent-color) 0%, var(--accent-color-darkest) 100%);
+    --nav-button-hover-bg: linear-gradient(135deg, var(--accent-color-darker) 0%, #1b5e20 100%);
+    --nav-button-disabled-bg: #c8e6c9;
+    --nav-button-disabled-text: #a5d6a7;
+    --feedback-popup-card-bg: #fff;
+    --feedback-popup-text: #1a1a2e;
+    --feedback-popup-close-hover: #c41c32;
+    --feedback-popup-nav-btn-bg: var(--accent-color);
+    --feedback-popup-nav-btn-hover-bg: var(--accent-color-darker);
+    --feedback-popup-nav-btn-disabled-bg: #d2e5d7;
+    --feedback-popup-nav-btn-disabled-text: #888;
+    --switch-track-bg: #c8e6c9;
+    --switch-knob-bg: white;
+    --switch-active-track-bg: var(--accent-color);
+    --choice-button-bg: #f5f5f5;
+    --choice-button-text: #333;
+    --choice-button-border: #e0e0e0;
+    --choice-button-hover-bg: #e8f5e9;
+    --choice-button-hover-border: var(--accent-color-light);
+    --choice-button-selected-bg: var(--accent-color);
+    --choice-button-selected-text: #fff;
+    --choice-button-selected-border: var(--accent-color-darker);
+    --enfant-switch-pink: #ff63b4;
+    --icon-sun-color: #f39c12;
+    --icon-moon-color: #f1c40f;
+    
+    /* New professional variables */
+    --hero-gradient: linear-gradient(135deg, #1a472a 0%, #2e7d32 50%, #43a047 100%);
+    --glass-bg: rgba(255, 255, 255, 0.95);
+    --glass-border: rgba(255, 255, 255, 0.2);
+    --highlight-color: #ffd54f;
+}
+
+/* --- DARK MODE VARIABLES --- */
+body.dark-mode {
+    --bg-gradient-start: #1a1a1a;
+    --bg-gradient-end: #242424;
+    --text-color-primary: #e0e0e0;
+    --text-color-secondary: #a0a0a0;
+    
+    --accent-color-light: #2a3a2b; /* Darker equivalent for light green backgrounds like default step circle */
+    --accent-text-color: var(--accent-color-bright); /* Brighter green for text on dark backgrounds */
+    
+    --border-color-light: #444;
+    --border-color-medium: #38503a; /* Darker equivalent for stepper progress bar default and step circle border */
+    
+    --card-bg: #2c2c2c;
+    --card-shadow: rgba(0, 0, 0, 0.3); /* Darker shadow for dark mode */
+    
+    --table-header-bg: #333;
+    --table-row-even-bg: #2a2a2a;
+    --table-row-hover-bg: #383838;
+    
+    --progress-line-bg: #333a40;
+    --progress-btn-default-border: #5c6670;
+    --progress-btn-default-text: #a0a0a0;
+    --progress-btn-default-bg: #3a3a3a;
+    --progress-label-default-text: #a0a0a0;
+    
+    --progress-btn-active-bg: #3a3a3a;
+    --progress-btn-active-text: var(--accent-color-bright);
+    --progress-btn-active-border: var(--accent-color);
+    
+    --nav-button-disabled-bg: #3a4f3b;
+    --nav-button-disabled-text: #788a79;
+
+    --feedback-popup-card-bg: #333;
+    --feedback-popup-text: #e0e0e0; /* Text inside popup */
+    --feedback-popup-nav-btn-disabled-bg: #454f48;
+    --feedback-popup-nav-btn-disabled-text: #777;
+
+    --switch-track-bg: #555; /* Default track for dark mode, e.g. dark mode toggle off (not applicable here, but for consistency) */
+    --switch-knob-bg: #bbb; /* Knob color in dark mode */
+    /* --switch-active-track-bg: var(--accent-color); can remain the same or be specific */
+
+    --choice-button-bg: #3a3a3a;
+    --choice-button-text: #e0e0e0;
+    --choice-button-border: #555;
+    --choice-button-hover-bg: #4a4a4a;
+    --choice-button-hover-border: #666;
+    /* --choice-button-selected-bg can remain var(--accent-color) */
+    /* --choice-button-selected-text can remain #fff */
+
+    /* Quiz Popup specific adjustments for dark mode if needed */
+    --hero-gradient: linear-gradient(135deg, #0d1f12 0%, #1a472a 50%, #2e7d32 100%);
+    --glass-bg: rgba(40, 40, 40, 0.95);
+    --glass-border: rgba(255, 255, 255, 0.1);
+}

@@ -1,0 +1,28 @@
+/* 
+   Hey there! This is the main CSS file for the index page.
+   It doesn't really have any styles of its own; it just acts like a manager,
+   importing all the other little CSS modules so we keep things tidy and organized.
+*/
+
+/* Main CSS file that imports all modules */
+
+/* 1. Variables & Theming */
+@import 'variables.css';
+
+/* 2. Base Styles & Typography */
+@import 'base.css';
+
+/* 3. Layout & Structure */
+@import 'layout.css';
+
+/* 4. Components (Buttons, Inputs, Cards, etc.) */
+@import 'components.css';
+
+/* 5. Stepper Navigation */
+@import 'stepper.css';
+
+/* 6. Content Sections (Video, Stats, etc.) */
+@import 'sections.css';
+
+/* 7. Modals & Popups */
+@import 'modals.css';

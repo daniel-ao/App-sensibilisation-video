@@ -1,0 +1,355 @@
+/*
+   This file deals with the specific content sections of the page.
+   Like the feature grid, the video player area, and the stats display.
+   If it's a big chunk of content on the page, its style is probably here.
+*/
+
+/* ========================================
+   FEATURE GRID
+   ======================================== */
+
+.feature-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin: 28px 0;
+}
+
+/* ========================================
+   RESOLUTION CARDS
+   ======================================== */
+
+.resolution-cards {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* Force single row */
+    gap: 12px;
+    margin: 16px 0;
+}
+
+.resolution-card {
+    background: var(--card-bg);
+    border: 2px solid var(--border-color-light);
+    border-radius: 12px;
+    padding: 12px 8px;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.resolution-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.res-sd { border-color: #90a4ae; }
+.res-sd:hover { border-color: #607d8b; background: #eceff1; }
+
+.res-hd { border-color: #81c784; }
+.res-hd:hover { border-color: #4caf50; background: #e8f5e9; }
+
+.res-fhd { border-color: #64b5f6; }
+.res-fhd:hover { border-color: #2196f3; background: #e3f2fd; }
+
+.res-4k { border-color: #ba68c8; }
+.res-4k:hover { border-color: #9c27b0; background: #f3e5f5; }
+
+.res-name {
+    font-size: 1.1em;
+    font-weight: 700;
+    color: var(--text-color-primary);
+    margin-bottom: 2px;
+}
+
+.res-data {
+    font-size: 0.85em;
+    color: var(--accent-color-darkest);
+    font-weight: 600;
+    margin-bottom: 2px;
+}
+
+.res-desc {
+    font-size: 0.75em;
+    color: var(--text-color-secondary);
+}
+
+@media (max-width: 768px) {
+    .resolution-cards {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* ========================================
+   VIDEO SECTION
+   ======================================== */
+
+.video-layout-container {
+    display: flex;
+    gap: 24px;
+    align-items: flex-start;
+}
+
+.video-controls-column {
+    flex: 1;
+    min-width: 300px;
+}
+
+.video-player-column {
+    flex: 1.5;
+}
+
+.mode-switch-inline {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-left: auto;
+}
+
+.video-intro {
+    font-size: 0.95em;
+    color: var(--text-color-secondary);
+    margin-bottom: 12px;
+}
+
+.mode-status {
+    font-weight: 600;
+    margin: 8px 0;
+    padding: 8px 12px;
+    background: var(--accent-color-light);
+    border-radius: 8px;
+    display: inline-block;
+    font-size: 0.9em;
+}
+
+.video-container {
+    position: relative;
+    border-radius: 16px;
+    overflow: hidden;
+    background: linear-gradient(135deg, #1a1a2e, #16213e);
+    margin-bottom: 0;
+    box-shadow: 
+        0 10px 30px rgba(0, 0, 0, 0.2),
+        0 0 0 1px rgba(255, 255, 255, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+.video-container:hover {
+    transform: translateY(-2px);
+    box-shadow: 
+        0 15px 40px rgba(0, 0, 0, 0.25),
+        0 0 0 1px rgba(76, 175, 80, 0.3);
+}
+
+.video-container video {
+    width: 100%;
+    height: auto;
+    display: block;
+    max-width: 100%;
+    border-radius: 10px;
+}
+
+#transitionScreen {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 1.5em;
+    text-align: center;
+    z-index: 10000;
+    backdrop-filter: blur(10px);
+    display: none;
+}
+
+#transitionText {
+    color: #fff;
+    font-size: 1.5em;
+    text-align: center;
+}
+
+/* Compact User Input Section */
+.user-input-section {
+    background: var(--table-row-even-bg);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 16px;
+}
+
+.input-fields {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+}
+
+.input-group {
+    flex: 1;
+    min-width: 140px;
+}
+
+#userInputGroup {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    margin: 12px 0;
+    width: 100%;
+}
+
+#fields {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+}
+
+#pseudo, #temps {
+    width: 100%;
+    max-width: none;
+    padding: 10px 14px;
+    font-size: 0.95em;
+}
+
+#startButton {
+    display: block;
+    margin: 12px 0 0 0;
+    width: 100%;
+    border-radius: 10px;
+    font-size: 1em;
+    padding: 12px 0;
+}
+
+@media (max-width: 900px) {
+    .video-layout-container {
+        flex-direction: column;
+    }
+    
+    .resolution-cards {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+/* ========================================
+   SENSIBILISATION LAYOUT
+   ======================================== */
+
+.sensibilisation-layout {
+    display: flex;
+    gap: 16px;
+    height: calc(100vh - 180px); /* Fit in viewport */
+    min-height: 400px;
+}
+
+.sensibilisation-layout > section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    overflow: hidden;
+}
+
+.compact-card {
+    padding: 16px !important;
+}
+
+.compact-card .card-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow: hidden;
+}
+
+/* Impact Section Compact */
+.impact-highlight.compact {
+    padding: 12px;
+    margin-bottom: 12px;
+}
+
+.impact-highlight.compact .impact-number {
+    font-size: 2em;
+}
+
+.impact-highlight.compact .impact-label {
+    font-size: 0.9em;
+}
+
+.impact-cards.compact {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-top: auto;
+}
+
+.impact-cards.compact .impact-card {
+    padding: 10px 6px;
+}
+
+.impact-cards.compact .impact-icon {
+    font-size: 1.5em;
+    margin-bottom: 4px;
+}
+
+.impact-cards.compact h4 {
+    font-size: 0.85em;
+    margin-bottom: 2px;
+}
+
+.impact-cards.compact p {
+    font-size: 0.75em;
+}
+
+/* Stats Section Compact */
+.stats-visualization.compact {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    gap: 12px;
+}
+
+.stats-visualization.compact .graphique {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 0; /* Allow shrinking */
+    background: #fff;
+    border-radius: 8px;
+    padding: 8px;
+}
+
+.stats-visualization.compact .stats-image {
+    max-height: 100%;
+    max-width: 100%;
+    object-fit: contain;
+}
+
+.stats-visualization.compact .explication {
+    font-size: 0.9em;
+}
+
+.tip-box.compact {
+    padding: 8px 12px;
+    margin: 8px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.tip-box.compact .tip-icon {
+    font-size: 1.2em;
+}
+
+.tip-box.compact p {
+    margin: 0;
+    font-size: 0.9em;
+}
+
+@media (max-width: 1000px) {
+    .sensibilisation-layout {
+        flex-direction: column;
+        height: auto;
+    }
+}
