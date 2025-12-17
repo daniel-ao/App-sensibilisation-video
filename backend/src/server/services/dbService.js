@@ -23,7 +23,7 @@ function openDb() {
 function getSummary() {
   const db = openDb();
   try {
-    const tableRows = db.prepare("SELECT name FROM sqlite_master WHERE type='table' ORDER BY name").all();
+    const tableRows = db.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name != 'sqlite_sequence' ORDER BY name").all();
     const tables = tableRows.map(t => t.name);
     const hasSessions = tables.includes('sessions');
     const hasUsers = tables.includes('users');
