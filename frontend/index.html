@@ -27,6 +27,15 @@
             </div>
             
             <div class="header-actions">
+                <button id="headerLoginBtn" class="header-btn" title="Se connecter">
+                    <span class="btn-icon">👤</span>
+                    <span class="btn-text">Connexion</span>
+                </button>
+                <button id="headerLogoutBtn" class="header-btn" title="Se déconnecter" style="display: none;">
+                    <span class="btn-icon">🚪</span>
+                    <span class="btn-text">Déconnexion</span>
+                </button>
+
                 <div id="darkModeSwitchContainer" class="switch-wrapper">
                     <label class="switch">
                         <input type="checkbox" id="darkModeToggle">
@@ -304,6 +313,11 @@
                                     <section id="feedback1" class="input-group">
                                         <form id="userForm">
                                             <input type="text" id="pseudo" name="pseudo" required placeholder="Entrez votre pseudo" class="input-field">
+                                            <div id="pseudoFeedback" class="feedback-message" style="display: none;"></div>
+                                            <div class="auth-buttons" style="margin-top: 10px;">
+                                                <button type="button" id="loginButton" class="btn-secondary btn-small" style="display: none;">Se connecter</button>
+                                                <button type="button" id="registerButton" class="btn-secondary btn-small" style="display: none;">S'inscrire</button>
+                                            </div>
                                         </form>
                                     </section>
                                     <section id="tempsSection" class="input-group">
@@ -429,6 +443,54 @@
                 <button id="passwordCancelBtn" class="quiz-btn quiz-btn-cancel">Annuler</button>
                 <button id="passwordSubmitBtn" class="quiz-btn quiz-btn-submit">Valider</button>
             </div>
+        </div>
+    </div>
+
+    <!-- LOGIN POPUP -->
+    <div id="loginPopup" class="popup-overlay" style="display: none;">
+        <div class="popup-box login-popup-box" style="max-width: 400px;">
+            <h3>Connexion</h3>
+            <form id="loginForm">
+                <div class="input-group" style="margin-bottom: 15px;">
+                    <label for="loginPseudo" style="display: block; margin-bottom: 5px;">Pseudo</label>
+                    <input type="text" id="loginPseudo" name="pseudo" required class="input-field" style="width: 100%;">
+                </div>
+                <div class="input-group" style="margin-bottom: 15px;">
+                    <label for="loginPassword" style="display: block; margin-bottom: 5px;">Mot de passe</label>
+                    <input type="password" id="loginPassword" name="password" required class="input-field" style="width: 100%;">
+                </div>
+                <div id="loginFeedback" class="feedback-message" style="color: red; display: none; margin-bottom: 10px;"></div>
+                <div class="quiz-buttons">
+                    <button type="button" id="loginCancelBtn" class="quiz-btn quiz-btn-cancel">Annuler</button>
+                    <button type="submit" id="loginSubmitBtn" class="quiz-btn quiz-btn-submit">Se connecter</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- REGISTER POPUP -->
+    <div id="registerPopup" class="popup-overlay" style="display: none;">
+        <div class="popup-box register-popup-box" style="max-width: 400px;">
+            <h3>Inscription</h3>
+            <form id="registerForm">
+                <div class="input-group" style="margin-bottom: 15px;">
+                    <label for="registerPseudo" style="display: block; margin-bottom: 5px;">Pseudo</label>
+                    <input type="text" id="registerPseudo" name="pseudo" required class="input-field" style="width: 100%;">
+                </div>
+                <div class="input-group" style="margin-bottom: 15px;">
+                    <label for="registerEmail" style="display: block; margin-bottom: 5px;">Email</label>
+                    <input type="email" id="registerEmail" name="email" required class="input-field" style="width: 100%;">
+                </div>
+                <div class="input-group" style="margin-bottom: 15px;">
+                    <label for="registerPassword" style="display: block; margin-bottom: 5px;">Mot de passe</label>
+                    <input type="password" id="registerPassword" name="password" required class="input-field" style="width: 100%;">
+                </div>
+                <div id="registerFeedback" class="feedback-message" style="color: red; display: none; margin-bottom: 10px;"></div>
+                <div class="quiz-buttons">
+                    <button type="button" id="registerCancelBtn" class="quiz-btn quiz-btn-cancel">Annuler</button>
+                    <button type="submit" id="registerSubmitBtn" class="quiz-btn quiz-btn-submit">S'inscrire</button>
+                </div>
+            </form>
         </div>
     </div>
 

@@ -35,6 +35,11 @@
                 <span class="mini-card-value level" id="levelText">-</span>
             </div>
         </div>
+        
+        <!-- Action Buttons Container -->
+        <div id="actionButtonsContainer" class="action-buttons-container" style="text-align: center; margin-top: 20px;">
+            <!-- Buttons will be injected here by JS -->
+        </div>
     </header>
 
     <main class="main-content">
@@ -124,8 +129,46 @@
     </section>
 
     <footer class="page-footer">
-        <button id="backButton" class="btn-retour" onclick="window.location.href='../index.html'">Retour à l’accueil</button>
+        <button id="backButton" class="btn-retour" onclick="window.location.href='index.html'">Retour à l’accueil</button>
     </footer>
+
+    <!-- SAVE RESULTS PROMPT -->
+    <div id="saveResultsPrompt" class="save-results-bar" style="display: none;">
+        <div class="save-results-content">
+            <span class="save-icon">💾</span>
+            <p>Voulez-vous sauvegarder vos résultats pour jouer plus tard ?</p>
+            <div class="save-actions">
+                <button id="saveResultsBtn" class="btn-primary btn-small">Oui, sauvegarder</button>
+                <button id="closeSavePromptBtn" class="btn-secondary btn-small">Non, merci</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- REGISTER MODAL -->
+    <div id="registerPopup" class="popup-overlay" style="display: none;">
+        <div class="popup-box register-popup-box">
+            <h3>Sauvegarder ma progression</h3>
+            <form id="registerForm">
+                <div class="input-group">
+                    <label for="registerPseudo">Pseudo</label>
+                    <input type="text" id="registerPseudo" name="pseudo" required class="input-field">
+                </div>
+                <div class="input-group">
+                    <label for="registerEmail">Email</label>
+                    <input type="email" id="registerEmail" name="email" required class="input-field">
+                </div>
+                <div class="input-group">
+                    <label for="registerPassword">Mot de passe</label>
+                    <input type="password" id="registerPassword" name="password" required class="input-field">
+                </div>
+                <div id="registerFeedback" class="feedback-message" style="color: red; display: none;"></div>
+                <div class="quiz-buttons">
+                    <button type="button" id="registerCancelBtn" class="quiz-btn quiz-btn-cancel">Annuler</button>
+                    <button type="submit" id="registerSubmitBtn" class="quiz-btn quiz-btn-submit">S'inscrire</button>
+                </div>
+            </form>
+        </div>
+    </div>
     
     <script src="assets/js/config.js"></script>
     <script src="assets/js/api.js"></script>

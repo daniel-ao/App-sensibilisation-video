@@ -311,6 +311,24 @@
     margin-bottom: 20px;
 }
 
+.login-popup-box,
+.register-popup-box {
+    background: var(--card-bg);
+    border-radius: 20px;
+    padding: 28px;
+    box-shadow: 0 25px 80px rgba(0, 0, 0, 0.3);
+    width: 95vw;
+    max-width: 400px;
+}
+
+.login-popup-box h3,
+.register-popup-box h3 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    text-align: center;
+    color: var(--accent-color-darker);
+}
+
 /* --------- Popup quiz --------- */
 .popup-overlay {
     position: fixed;

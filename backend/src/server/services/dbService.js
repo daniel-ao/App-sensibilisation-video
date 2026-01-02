@@ -97,7 +97,7 @@ function getUsers({ q = '', limit = 50, offset = 0 } = {}) {
     const where = q ? `WHERE pseudo LIKE @like` : '';
     const total = db.prepare(`SELECT COUNT(*) as c FROM users ${where}`).get({ like })?.c || 0;
     const rows = db.prepare(`
-      SELECT pseudo, totalScore, totalTime, sessionCount
+      SELECT pseudo, email, is_admin, totalScore, totalTime, sessionCount
       FROM users
       ${where}
       ORDER BY pseudo COLLATE NOCASE ASC
@@ -182,9 +182,92 @@ function insertSession(record) {
 function ensureUser(pseudo) {
   const db = openDb();
   try {
+    const normalizedPseudo = pseudo.toLowerCase();
     const insert = db.prepare(`INSERT INTO users (pseudo, totalScore, totalTime, sessionCount) VALUES (?, 0, 0, 0)
       ON CONFLICT(pseudo) DO NOTHING`);
-    insert.run(pseudo);
+    insert.run(normalizedPseudo);
+  } finally {
+    db.close();
+  }
+}
+
+function incrementSessionCount(pseudo) {
+  const db = openDb();
+  try {
+    const normalizedPseudo = pseudo.toLowerCase();
+    const stmt = db.prepare(`
+      UPDATE users 
+      SET sessionCount = sessionCount + 1 
+      WHERE pseudo = ?
+    `);
+    stmt.run(normalizedPseudo);
+  } finally {
+    db.close();
+  }
+}
+
+function checkUserExists(pseudo) {
+  const db = openDb();
+  try {
+    const normalizedPseudo = pseudo.toLowerCase();
+    const row = db.prepare('SELECT 1 FROM users WHERE pseudo = ?').get(normalizedPseudo);
+    return !!row;
+  } finally {
+    db.close();
+  }
+}
+
+function registerUser({ pseudo, email, passwordHash }) {
+  const db = openDb();
+  try {
+    const normalizedPseudo = pseudo.toLowerCase();
+    
+    // Check if user exists first
+    const existing = db.prepare('SELECT password_hash FROM users WHERE pseudo = ?').get(normalizedPseudo);
+    
+    if (existing) {
+        if (existing.password_hash) {
+            // Already registered
+            throw new Error('Pseudo already exists');
+        } else {
+            // Guest account - Upgrade it
+            const stmt = db.prepare(`
+                UPDATE users 
+                SET email = @email, password_hash = @passwordHash 
+                WHERE pseudo = @pseudo
+            `);
+            stmt.run({ pseudo: normalizedPseudo, email, passwordHash });
+            return { success: true };
+        }
+    } else {
+        // New user
+        const stmt = db.prepare(`
+          INSERT INTO users (pseudo, email, password_hash, totalScore, totalTime, sessionCount)
+          VALUES (@pseudo, @email, @passwordHash, 0, 0, 0)
+        `);
+        stmt.run({ pseudo: normalizedPseudo, email, passwordHash });
+        return { success: true };
+    }
+  } catch (err) {
+    if (err.message === 'Pseudo already exists') throw err;
+    if (err.code === 'SQLITE_CONSTRAINT_PRIMARYKEY') {
+        throw new Error('Pseudo already exists');
+    }
+    if (err.code === 'SQLITE_CONSTRAINT_UNIQUE') {
+        throw new Error('Email already exists');
+    }
+    throw err;
+  } finally {
+    db.close();
+  }
+}
+
+function getUserCredentials(pseudo) {
+  const db = openDb();
+  try {
+    const normalizedPseudo = pseudo.toLowerCase();
+    const row = db.prepare('SELECT pseudo, password_hash, is_admin FROM users WHERE lower(pseudo) = ?').get(normalizedPseudo);
+    return row;
   } finally {
     db.close();
   }
@@ -193,12 +276,14 @@ function ensureUser(pseudo) {
 function setScore(pseudo, score) {
   const db = openDb();
   try {
+    // We want to ACCUMULATE score in the DB.
+    const normalizedPseudo = pseudo.toLowerCase();
     const upsert = db.prepare(`
       INSERT INTO users(pseudo, totalScore, totalTime, sessionCount)
       VALUES(@pseudo, @score, 0, 0)
-      ON CONFLICT(pseudo) DO UPDATE SET totalScore = excluded.totalScore
+      ON CONFLICT(pseudo) DO UPDATE SET totalScore = totalScore + excluded.totalScore
     `);
-    upsert.run({ pseudo, score: Number(score) || 0 });
+    upsert.run({ pseudo: normalizedPseudo, score: Number(score) || 0 });
   } finally {
     db.close();
   }
@@ -207,7 +292,8 @@ function setScore(pseudo, score) {
 function getScore(pseudo) {
   const db = openDb();
   try {
-    const row = db.prepare('SELECT totalScore FROM users WHERE pseudo = ?').get(pseudo);
+    const normalizedPseudo = pseudo.toLowerCase();
+    const row = db.prepare('SELECT totalScore FROM users WHERE pseudo = ?').get(normalizedPseudo);
     return row ? row.totalScore : 0;
   } finally {
     db.close();
@@ -217,12 +303,14 @@ function getScore(pseudo) {
 function setTime(pseudo, time) {
   const db = openDb();
   try {
+    // Same logic for time, accumulate it
+    const normalizedPseudo = pseudo.toLowerCase();
     const upsert = db.prepare(`
       INSERT INTO users(pseudo, totalScore, totalTime, sessionCount)
       VALUES(@pseudo, 0, @time, 0)
-      ON CONFLICT(pseudo) DO UPDATE SET totalTime = excluded.totalTime
+      ON CONFLICT(pseudo) DO UPDATE SET totalTime = totalTime + excluded.totalTime
     `);
-    upsert.run({ pseudo, time: Number(time) || 0 });
+    upsert.run({ pseudo: normalizedPseudo, time: Number(time) || 0 });
   } finally {
     db.close();
   }
@@ -231,7 +319,8 @@ function setTime(pseudo, time) {
 function getTime(pseudo) {
   const db = openDb();
   try {
-    const row = db.prepare('SELECT totalTime FROM users WHERE pseudo = ?').get(pseudo);
+    const normalizedPseudo = pseudo.toLowerCase();
+    const row = db.prepare('SELECT totalTime FROM users WHERE pseudo = ?').get(normalizedPseudo);
     return row ? row.totalTime : 0;
   } finally {
     db.close();
@@ -277,6 +366,66 @@ function computeGlobalAveragePrecision() {
   }
 }
 
+function linkGuestData(oldPseudo, newPseudo) {
+  const db = openDb();
+  
+  const transaction = db.transaction(() => {
+    const normalizedOld = oldPseudo.toLowerCase();
+    const normalizedNew = newPseudo.toLowerCase();
+
+    // 1. Move sessions
+    const info = db.prepare('UPDATE sessions SET user = ? WHERE user = ?').run(normalizedNew, normalizedOld);
+    const sessionChanges = info.changes;
+
+    // 2. Handle Users table (Merge or Rename)
+    const oldUser = db.prepare('SELECT totalScore, totalTime, sessionCount FROM users WHERE pseudo = ?').get(normalizedOld);
+    
+    if (oldUser) {
+        const newUser = db.prepare('SELECT 1 FROM users WHERE pseudo = ?').get(normalizedNew);
+
+        if (newUser) {
+            // Target user exists: MERGE stats and DELETE old user
+            db.prepare(`
+                UPDATE users 
+                SET totalScore = totalScore + @score,
+                    totalTime = totalTime + @time,
+                    sessionCount = sessionCount + @count
+                WHERE pseudo = @newPseudo
+            `).run({
+                score: oldUser.totalScore || 0,
+                time: oldUser.totalTime || 0,
+                count: oldUser.sessionCount || 0,
+                newPseudo: normalizedNew
+            });
+            
+            db.prepare('DELETE FROM users WHERE pseudo = ?').run(normalizedOld);
+        } else {
+            // Target user does not exist: RENAME old user
+            db.prepare('UPDATE users SET pseudo = ? WHERE pseudo = ?').run(normalizedNew, normalizedOld);
+        }
+    }
+    
+    return { changes: sessionChanges };
+  });
+
+  try {
+    return transaction();
+  } finally {
+    db.close();
+  }
+}
+
+function updateUserRole(pseudo, isAdmin) {
+  const db = openDb();
+  try {
+    const normalizedPseudo = pseudo.toLowerCase();
+    const stmt = db.prepare('UPDATE users SET is_admin = ? WHERE pseudo = ?');
+    stmt.run(isAdmin ? 1 : 0, normalizedPseudo);
+  } finally {
+    db.close();
+  }
+}
+
 module.exports = {
   getSummary,
   getSessions,
@@ -289,5 +438,11 @@ module.exports = {
   setTime,
   getTime,
   computeGlobalAveragePrecision,
-  ensureUser
+  ensureUser,
+  checkUserExists,
+  registerUser,
+  getUserCredentials,
+  linkGuestData,
+  incrementSessionCount,
+  updateUserRole
 };

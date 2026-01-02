@@ -40,11 +40,73 @@
   let sortDir = 'ASC';
   const pageSize = 25;
 
+  // --- Auth & Init Logic ---
+  let currentUser = null;
+
+  function init() {
+    // 1. Check URL params for pre-filtering
+    const urlParams = new URLSearchParams(window.location.search);
+    const qParam = urlParams.get('q');
+    if (qParam) {
+        currentQuery = qParam;
+        if (searchInput) searchInput.value = qParam;
+    }
+
+    // 2. Check Login Status
+    fetch(`${API_BASE}/api/me`)
+        .then(r => r.json())
+        .then(data => {
+            if (!data.loggedIn) {
+                // Not logged in -> Show message and stop
+                document.querySelector('.page-db-container').innerHTML = `
+                    <div style="text-align: center; padding: 50px;">
+                        <h2>Accès restreint</h2>
+                        <p>Vous devez être connecté pour accéder à cette page.</p>
+                        <a href="index.html" class="btn-primary">Retour à l'accueil</a>
+                    </div>
+                `;
+                return;
+            }
+
+            currentUser = data.user;
+            
+            // 3. Handle Admin vs User View
+            if (!currentUser.is_admin) {
+                // Hide Users tab
+                const usersTab = document.querySelector('.db-tab[data-tab="users"]');
+                if (usersTab) usersTab.style.display = 'none';
+                
+                // If user tries to access users tab, force switch to sessions
+                if (currentTab === 'users') currentTab = 'sessions';
+            }
+
+            // 4. Start loading data
+            if (!overlay) {
+                fetchSummary();
+                loadData();
+            }
+        })
+        .catch(err => {
+            console.error("Auth check failed", err);
+            // Fallback for error
+             document.querySelector('.page-db-container').innerHTML = `
+                <div style="text-align: center; padding: 50px;">
+                    <h2>Erreur</h2>
+                    <p>Impossible de vérifier votre session.</p>
+                    <a href="index.html">Retour</a>
+                </div>
+            `;
+        });
+  }
+
+  // Call init instead of direct execution
+  init();
+
   function show() {
     if (!overlay) {
       // In page mode, nothing to show; ensure data is loaded
-      fetchSummary();
-      loadData();
+      // fetchSummary(); // Moved to init()
+      // loadData();   // Moved to init()
       return;
     }
     overlay.style.display = 'flex';
@@ -113,6 +175,7 @@
       headEl.innerHTML = '<tr><th>Aucune donnée</th></tr>';
       return;
     }
+    
     const cols = Object.keys(rows[0]);
     const headerRow = document.createElement('tr');
     cols.forEach(c => {
@@ -137,11 +200,82 @@
       }
       headerRow.appendChild(th);
     });
+
+    // Add Admin column header if in users tab
+    if (currentTab === 'users') {
+        const th = document.createElement('th');
+        th.textContent = 'Admin';
+        headerRow.appendChild(th);
+    }
+
     headEl.appendChild(headerRow);
     const frag = document.createDocumentFragment();
     rows.forEach(r => {
       const tr = document.createElement('tr');
-      tr.innerHTML = cols.map(c => `<td>${escapeHtml(r[c])}</td>`).join('');
+      
+      // Standard columns
+      cols.forEach(c => {
+        let val = escapeHtml(r[c]);
+        if (c === 'password_hash' && val.length > 12) {
+          val = `<span title="${val}">${val.substring(0, 8)}...</span>`;
+        }
+        const td = document.createElement('td');
+        td.innerHTML = val; 
+        tr.appendChild(td);
+      });
+
+      // Admin Toggle Column
+      if (currentTab === 'users') {
+        const td = document.createElement('td');
+        const isMainAdmin = (r.pseudo || '').toLowerCase() === 'admin';
+        const isAdmin = !!r.is_admin;
+        
+        const label = document.createElement('label');
+        label.className = 'switch';
+        
+        const input = document.createElement('input');
+        input.type = 'checkbox';
+        input.checked = isAdmin;
+        if (isMainAdmin) {
+            input.disabled = true;
+            label.title = "Cannot change Main Admin role";
+        }
+        
+        // Event Listener for Toggle
+        input.addEventListener('change', async (e) => {
+            e.stopPropagation(); // Prevent row click
+            
+            const newStatus = input.checked;
+            try {
+                const res = await fetch(`${API_BASE}/api/update-role`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ pseudo: r.pseudo, is_admin: newStatus })
+                });
+                const data = await res.json();
+                if (!res.ok) {
+                    throw new Error(data.message || 'Error updating role');
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Failed to update role: ' + err.message);
+                input.checked = !newStatus; // Revert
+            }
+        });
+        
+        const slider = document.createElement('span');
+        slider.className = 'slider';
+        
+        label.appendChild(input);
+        label.appendChild(slider);
+        td.appendChild(label);
+        
+        // Prevent click on the cell from triggering row details
+        td.addEventListener('click', (e) => e.stopPropagation());
+        
+        tr.appendChild(td);
+      }
+
       if (currentTab === 'sessions') {
         // Be resilient to different id column names
         const sessionId = r.id ?? r.rowid ?? r.session_id ?? r.sessionId;
@@ -153,6 +287,8 @@
             console.warn('No id field found on session row; cannot open detail', r);
           });
         }
+      } else if (currentTab === 'users') {
+        tr.addEventListener('click', () => openUserDetail(r));
       }
       frag.appendChild(tr);
     });
@@ -197,8 +333,35 @@
     }).catch(err => console.error('Resolutions fetch error', err));
   }
 
+  function openUserDetail(row) {
+    if (!detailPanel) return;
+    const headerTitle = detailPanel.querySelector('.db-detail-header h4');
+    if (headerTitle) headerTitle.textContent = 'Détail de l\'utilisateur';
+    
+    detailContent.innerHTML = '';
+    const kv = document.createElement('div');
+    kv.className = 'kv';
+    const entries = Object.entries(row || {});
+    if (!entries.length) {
+       detailContent.innerHTML = '<div class="kv"><div class="k">Info</div><div class="v">Aucune donnée.</div></div>';
+    } else {
+      entries.forEach(([k,v]) => {
+        const kEl = document.createElement('div'); kEl.className='k'; kEl.textContent = k;
+        const vEl = document.createElement('div'); vEl.className='v'; vEl.textContent = v;
+        kv.append(kEl, vEl);
+      });
+      detailContent.appendChild(kv);
+    }
+    detailPanel.classList.add('open');
+    detailPanel.setAttribute('aria-hidden','false');
+    const btn = document.getElementById('dbDetailCloseBtn');
+    if (btn) btn.focus();
+  }
+
   function openDetail(id) {
     if (!detailPanel) return;
+    const headerTitle = detailPanel.querySelector('.db-detail-header h4');
+    if (headerTitle) headerTitle.textContent = 'Détail de la session';
     if (id === undefined || id === null || id === '') {
       console.warn('openDetail called without a valid id');
       detailContent.innerHTML = '<div class="kv"><div class="k">Erreur</div><div class="v">Identifiant de session manquant.</div></div>';

@@ -35,7 +35,7 @@ function scanVideoDirectories() {
                         const safeCategory = encodeURIComponent(category);
                         const safeVideoName = encodeURIComponent(videoName);
                         const safeFile = encodeURIComponent(file);
-                        sources[resolution] = `${safeRootDir}/${safeCategory}/${safeVideoName}/${safeFile}`;
+                        sources[resolution] = `/${safeRootDir}/${safeCategory}/${safeVideoName}/${safeFile}`;
                     }
                 }
                 if (resolutions.size > 0) {

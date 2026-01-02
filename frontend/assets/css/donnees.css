@@ -1,0 +1,138 @@
+/* Styles specific to the standalone Data Explorer page (donnees.html) */
+
+body {
+    padding: 16px;
+    background-color: var(--bg-color); /* Ensure background matches theme */
+}
+
+.standalone-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+}
+
+.standalone-header h1 {
+    margin: 0;
+    font-size: 1.6em;
+    color: var(--text-color-primary);
+}
+
+.back-link {
+    text-decoration: none;
+    padding: 8px 14px;
+    border-radius: 8px;
+    background: var(--nav-button-bg);
+    color: #fff;
+    font-weight: 600;
+    transition: background-color 0.2s;
+}
+
+.back-link:hover {
+    background: var(--nav-button-hover-bg);
+}
+
+/* Hide the modal overlay elements that might be present in shared JS/HTML structures */
+.db-browser-overlay, 
+#dbBrowserOverlay {
+    display: none !important;
+}
+
+/* Container for the browser component in standalone mode */
+.page-db-container {
+    max-width: 1180px;
+    margin: 0 auto;
+    position: relative;
+}
+
+/* 
+   Override the modal styles to make it fit the page flow.
+   We add overflow: hidden to ensure the sliding detail panel 
+   doesn't cause horizontal scrollbars on the body when hidden.
+*/
+.db-browser-modal {
+    position: relative;
+    max-height: none;
+    width: 100%;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.12);
+    overflow: hidden; /* Crucial for containing the sliding panel */
+    border-radius: 12px; /* Match modal radius */
+    background: var(--card-bg);
+}
+
+/* Ensure the detail panel is positioned correctly within this relative container */
+.db-detail-panel {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0; /* Use bottom:0 instead of height:100% for better reliability */
+    height: auto;
+    z-index: 10;
+    background: var(--card-bg);
+    border-left: 1px solid var(--border-color-light);
+}
+
+/* Toggle Switch */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 34px;
+  height: 20px;
+  vertical-align: middle;
+}
+
+.switch input { 
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: .4s;
+  transition: .4s;
+  border-radius: 34px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 12px;
+  width: 12px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: #2196F3;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #2196F3;
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(14px);
+  -ms-transform: translateX(14px);
+  transform: translateX(14px);
+}
+
+/* Disabled state */
+input:disabled + .slider {
+  background-color: #e6e6e6;
+  cursor: not-allowed;
+}
+
+input:disabled + .slider:before {
+  background-color: #999;
+}

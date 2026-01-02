@@ -1,5 +1,12 @@
 const express = require('express');
+const crypto = require('crypto');
 const router = express.Router();
+
+// Debug logging
+router.use((req, res, next) => {
+    console.log(`[API Request] ${req.method} ${req.url}`);
+    next();
+});
 // On peut supprimer ces deux lignes si on n'utilise plus du tout CSV/JSON
 // const jsonHandler = require('../data/jsonHandler'); 
 // const csvHandler = require('../data/csvHandler'); 
@@ -11,6 +18,138 @@ const dbService = require('../services/dbService');
 router.get('/api/get-videos', (req, res) => {
     const { mode, includeLicensed } = req.query;
     res.json(videoService.getVideos(mode, includeLicensed));
+});
+
+// --- Routes Utilisateurs ---
+router.get('/api/check-pseudo/:pseudo', (req, res) => {
+    const { pseudo } = req.params;
+    try {
+        const exists = dbService.checkUserExists(pseudo);
+        res.json({ exists });
+    } catch (error) {
+        console.error("Error checking pseudo:", error);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+});
+
+router.post('/api/register', (req, res) => {
+    const { pseudo, email, password } = req.body;
+    if (!pseudo || !email || !password) {
+        return res.status(400).json({ message: 'All fields are required.' });
+    }
+    
+    // Simple SHA256 hash (in production use bcrypt/argon2)
+    const passwordHash = crypto.createHash('sha256').update(password).digest('hex');
+    
+    try {
+        dbService.registerUser({ pseudo, email, passwordHash });
+        res.json({ success: true, message: 'User registered successfully.' });
+    } catch (err) {
+        res.status(400).json({ message: err.message });
+    }
+});
+
+router.post('/api/login', (req, res) => {
+    const { pseudo, password } = req.body;
+    if (!pseudo || !password) {
+        return res.status(400).json({ message: 'Pseudo and password are required.' });
+    }
+
+    try {
+        const user = dbService.getUserCredentials(pseudo);
+        if (!user) {
+            return res.status(401).json({ message: 'Invalid credentials.' });
+        }
+
+        const passwordHash = crypto.createHash('sha256').update(password).digest('hex');
+        if (user.password_hash !== passwordHash) {
+            return res.status(401).json({ message: 'Invalid credentials.' });
+        }
+
+        // Set a simple cookie for session
+        res.cookie('user_session', user.pseudo, { httpOnly: true, maxAge: 24 * 60 * 60 * 1000 }); // 1 day
+        res.json({ success: true, message: 'Login successful.', user: { pseudo: user.pseudo, is_admin: !!user.is_admin } });
+    } catch (err) {
+        console.error("Login error:", err);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+});
+
+router.get('/api/me', (req, res) => {
+    const pseudo = req.cookies.user_session;
+    if (pseudo) {
+        const user = dbService.getUserCredentials(pseudo);
+        if (user) {
+            res.json({ loggedIn: true, user: { pseudo: user.pseudo, is_admin: !!user.is_admin } });
+        } else {
+            res.clearCookie('user_session');
+            res.json({ loggedIn: false });
+        }
+    } else {
+        res.json({ loggedIn: false });
+    }
+});
+
+router.post('/api/logout', (req, res) => {
+    res.clearCookie('user_session');
+    res.json({ success: true, message: 'Logged out successfully.' });
+});
+
+router.post('/api/link-guest-data', (req, res) => {
+    const { oldPseudo, newPseudo } = req.body;
+    if (!oldPseudo || !newPseudo) {
+        return res.status(400).json({ message: 'Old and new pseudo required.' });
+    }
+    try {
+        const result = dbService.linkGuestData(oldPseudo, newPseudo);
+        res.json({ success: true, changes: result.changes });
+    } catch (err) {
+        console.error("Link guest data error:", err);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
+});
+
+// Middleware to check if user is admin
+const isAdmin = (req, res, next) => {
+    console.log('[isAdmin] Checking auth...');
+    const pseudo = req.cookies.user_session;
+    console.log('[isAdmin] Cookie:', pseudo);
+    if (!pseudo) {
+        console.log('[isAdmin] No cookie');
+        return res.status(401).json({ message: 'Unauthorized' });
+    }
+    
+    const user = dbService.getUserCredentials(pseudo);
+    console.log('[isAdmin] User:', user);
+    if (!user || !user.is_admin) {
+        console.log('[isAdmin] Not admin');
+        return res.status(403).json({ message: 'Forbidden: Admins only' });
+    }
+    console.log('[isAdmin] Authorized');
+    next();
+};
+
+router.put('/api/update-role', isAdmin, (req, res) => {
+    const { pseudo, is_admin } = req.body;
+    console.log('[PUT Role] Request received for:', pseudo);
+    
+    if (!pseudo) {
+        return res.status(400).json({ message: 'Pseudo is required.' });
+    }
+
+    const MAIN_ADMIN = 'admin'; // Hardcoded main admin
+
+    if (pseudo.toLowerCase() === MAIN_ADMIN.toLowerCase()) {
+        return res.status(403).json({ message: 'Cannot change role of Main Admin.' });
+    }
+
+    try {
+        dbService.updateUserRole(pseudo, is_admin);
+        res.json({ success: true, message: `User role updated for ${pseudo}` });
+    } catch (err) {
+        console.error("Error updating role:", err);
+        res.status(500).json({ message: "Internal Server Error" });
+    }
 });
 
 router.get('/videos/resolutions/:baseVideoName', (req, res) => {
@@ -52,6 +191,7 @@ router.post('/addUser', (req, res) => {
         // --- MISE À JOUR DU USER (SCORE/PRECISION) ---
         // On s'assure que l'utilisateur existe dans la table users
         dbService.ensureUser(user);
+        dbService.incrementSessionCount(user);
         
         // Note: Le calcul du score total se fait normalement par accumulation côté client et envoi via /saveScore,
         // ou alors on pourrait le recalculer ici en SQL, mais pour l'instant on garde la logique existante :
@@ -207,7 +347,7 @@ router.get('/api/db/sessions', (req, res) => {
         res.status(500).json({ message: 'Erreur interne.' });
     }
 });
-router.get('/api/db/users', (req, res) => {
+router.get('/api/db/users', isAdmin, (req, res) => {
     const { q = '', limit = '50', offset = '0' } = req.query;
     const lim = Math.min(Math.max(parseInt(limit, 10) || 50, 1), 200);
     const off = Math.max(parseInt(offset, 10) || 0, 0);

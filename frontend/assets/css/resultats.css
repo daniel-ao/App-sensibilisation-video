@@ -660,3 +660,180 @@ details[open] > div[id^="satisfaction-container-"] {
         grid-template-columns: 1fr 1fr;
     } 
 }
+
+/* Save Results Prompt */
+.save-results-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: var(--card-bg-color);
+    border-top: 1px solid var(--border-color);
+    box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
+    padding: 1rem;
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    animation: slideUp 0.5s ease-out;
+}
+
+@keyframes slideUp {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+}
+
+.save-results-content {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    max-width: 800px;
+    width: 100%;
+}
+
+.save-icon {
+    font-size: 1.5rem;
+}
+
+.save-results-content p {
+    margin: 0;
+    flex: 1;
+    font-weight: 500;
+}
+
+.save-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+/* SAVE RESULTS PROMPT (Now a Modal) */
+#saveResultsPrompt {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7); /* Darker overlay */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    backdrop-filter: blur(4px);
+}
+
+.save-results-content {
+    background: var(--card-bg-color);
+    padding: 2.5rem;
+    border-radius: 1rem;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    width: 90%;
+    max-width: 500px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.save-icon {
+    font-size: 3rem;
+    margin-bottom: 0.5rem;
+}
+
+.save-results-content p {
+    font-size: 1.2rem;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.save-actions {
+    display: flex;
+    gap: 1rem;
+    width: 100%;
+    justify-content: center;
+    margin-top: 1rem;
+}
+
+.save-actions button {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    border: none;
+    font-weight: 600;
+    transition: transform 0.1s;
+}
+
+.save-actions button:active {
+    transform: scale(0.98);
+}
+
+#saveResultsBtn {
+    background-color: var(--accent-color);
+    color: white;
+}
+
+#closeSavePromptBtn {
+    background-color: #e9ecef;
+    color: var(--text-primary);
+}
+
+/* Modal Styles (copied/adapted) */
+.popup-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+}
+
+.popup-box {
+    background: var(--card-bg-color);
+    padding: 2rem;
+    border-radius: 1rem;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    width: 90%;
+    max-width: 400px;
+}
+
+.input-group {
+    margin-bottom: 1rem;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+.input-field {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--border-color);
+    border-radius: 0.5rem;
+    font-size: 1rem;
+}
+
+.quiz-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.quiz-btn {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.quiz-btn-cancel {
+    background: #e9ecef;
+    color: var(--text-primary);
+}
+
+.quiz-btn-submit {
+    background: var(--accent-color);
+    color: white;
+}

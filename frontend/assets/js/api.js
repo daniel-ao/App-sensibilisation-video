@@ -3,6 +3,7 @@
 
 let API_BASE_URL;
 const hostname = window.location.hostname;
+const port = window.location.port;
 
 const isLocal = hostname === 'localhost' || 
                 hostname === '127.0.0.1' || 
@@ -10,7 +11,11 @@ const isLocal = hostname === 'localhost' ||
                 hostname.startsWith('10.') ||
                 hostname.endsWith('.local');
 
-if (isLocal) {
+if (port === '3300') {
+    // Si on est sur le port 3300, on est sur le serveur Node directement, donc on utilise des chemins relatifs
+    API_BASE_URL = "";
+    console.log("Serveur Node détecté (port 3300). API relative.");
+} else if (isLocal) {
     // En local, on utilise le serveur Node.js sur le port 3300
     API_BASE_URL = `${window.location.protocol}//${hostname}:3300`;
     console.log("Mode LOCAL détecté. API sur:", API_BASE_URL);
@@ -35,10 +40,10 @@ async function fetchData(endpoint) {
 
 // --- Fonctions pour les statistiques personnelles ---
 function getSatisfactionCumul(pseudo) {
-    return fetchData(`satisfaction/${pseudo}`);
+    return fetchData(`satisfaction/${encodeURIComponent(pseudo)}`);
 }
 function getSatisfactionByDevice(pseudo) {
-    return fetchData(`satisfaction-by-device/${pseudo}`);
+    return fetchData(`satisfaction-by-device/${encodeURIComponent(pseudo)}`);
 }
 async function getConfusionsData(pseudo) {
      try {
@@ -66,7 +71,7 @@ function getUserTime(pseudo) {
     return fetchData(`getTime?pseudo=${encodeURIComponent(pseudo)}`);
 }
 function getUserPrecision(pseudo) {
-    return fetchData(`precision/${pseudo}`);
+    return fetchData(`precision/${encodeURIComponent(pseudo)}`);
 }
 
 

@@ -94,13 +94,17 @@ function displaySessionScoreGain() {
 }
 
 function displayDetailedRecap() {
-    let storedData = sessionStorage.getItem("feedbackSessions");
-    if (!storedData) {
-        document.getElementById("userResults").innerHTML = "<p>Aucune donnée de session à afficher.</p>";
-        return;
-    }
+    console.log("DEBUG: displayDetailedRecap called");
+    try {
+        let storedData = sessionStorage.getItem("feedbackSessions");
+        console.log("DEBUG: feedbackSessions =", storedData);
+        if (!storedData) {
+            document.getElementById("userResults").innerHTML = "<p>Aucune donnée de session à afficher.</p>";
+            return;
+        }
 
-    const sessions = JSON.parse(storedData);
+        const sessions = JSON.parse(storedData);
+        console.log("DEBUG: sessions count =", sessions.length);
     let resultHTML = sessions.map((data, sessionIndex) => {
         // --- Préparation des données ---
         let videoNumber = sessionIndex + 1;
@@ -208,7 +212,9 @@ function displayDetailedRecap() {
         `;
     }).join('');
 
+    console.log("DEBUG: resultHTML length =", resultHTML.length);
     document.getElementById("userResults").innerHTML = resultHTML;
+    console.log("DEBUG: userResults innerHTML set, element =", document.getElementById("userResults"));
     
     sessions.forEach((data, sessionIndex) => {
         setTimeout(async () => {
@@ -316,7 +322,8 @@ function displayDetailedRecap() {
                         const item = document.createElement('div');
                         item.className = 'capture-item';
                         const video = document.createElement('video');
-                        video.src = `../${basePath}/segment_${res}.mp4`;
+                        const videoSrcPath = basePath.startsWith('/') ? basePath : `../${basePath}`;
+                        video.src = `${videoSrcPath}/segment_${res}.mp4`;
                         video.muted = true;
                         video.loop = true;
                         video.playsInline = true;
@@ -377,6 +384,10 @@ function displayDetailedRecap() {
             }
         }, 0);
     });
+    } catch (error) {
+        console.error("ERROR in displayDetailedRecap:", error);
+        document.getElementById("userResults").innerHTML = `<p style="color: red;">Erreur: ${error.message}</p>`;
+    }
 }
 
 async function setupVideoComparisons() {
@@ -442,7 +453,8 @@ function createVideoPlayer(basePath, resolutions, initialResolution, videoId, pl
     resolutions.sort((a, b) => RESOLUTION_ORDER.indexOf(a) - RESOLUTION_ORDER.indexOf(b));
     resolutions.forEach(res => {
         const option = document.createElement('option');
-        option.value = `../${basePath}/segment_${res}.mp4`;
+        const videoSrcPath = basePath.startsWith('/') ? basePath : `../${basePath}`;
+        option.value = `${videoSrcPath}/segment_${res}.mp4`;
         option.textContent = res;
         option.selected = res === initialResolution;
         selector.appendChild(option);
@@ -545,7 +557,8 @@ async function displayVisualComparison() {
                 item.className = 'capture-item';
 
                 const video = document.createElement('video');
-                video.src = `../${basePath}/segment_${res}.mp4`;
+                const videoSrcPath = basePath.startsWith('/') ? basePath : `../${basePath}`;
+                video.src = `${videoSrcPath}/segment_${res}.mp4`;
                 video.muted = true;
                 video.loop = true;
                 video.playsInline = true;

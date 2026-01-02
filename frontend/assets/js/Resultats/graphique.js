@@ -3,6 +3,413 @@
 // Les constantes de configuration sont maintenant dans assets/js/config.js
 // Les appels fetch sont maintenant dans assets/js/api.js
 
+document.addEventListener("DOMContentLoaded", async function () {
+    console.log("========== GRAPHIQUE.JS INIT ==========");
+    console.log("[GRAPHIQUE] localStorage.pseudo =", localStorage.getItem("pseudo"));
+    console.log("[GRAPHIQUE] localStorage.displayPseudo =", localStorage.getItem("displayPseudo"));
+    console.log("[GRAPHIQUE] localStorage.guestDeclinedSave =", localStorage.getItem("guestDeclinedSave"));
+    console.log("[GRAPHIQUE] URL =", window.location.href);
+    
+    // --- 1. Check Login Status & Handle Buttons ---
+    const actionContainer = document.getElementById('actionButtonsContainer');
+    const urlParams = new URLSearchParams(window.location.search);
+    const isGuestFromUrl = urlParams.get('guest') === 'true';
+    const hadDeclinedSave = localStorage.getItem("guestDeclinedSave") === "true";
+    
+    // If user declined save, data is in DB, so treat as non-guest for data loading
+    const isGuest = isGuestFromUrl && !hadDeclinedSave;
+    console.log("[GRAPHIQUE] isGuestFromUrl =", isGuestFromUrl);
+    console.log("[GRAPHIQUE] hadDeclinedSave =", hadDeclinedSave);
+    console.log("[GRAPHIQUE] isGuest (final) =", isGuest);
+    
+    try {
+        const meRes = await fetch(`${API_BASE_URL}/api/me`);
+        const meData = await meRes.json();
+        console.log("[GRAPHIQUE] /api/me response =", meData);
+        const isLoggedIn = meData.loggedIn;
+        
+        // Get the pseudo to use for API calls (the one in DB)
+        const dbPseudo = isLoggedIn ? meData.user.pseudo : (localStorage.getItem("pseudo") || "Invité");
+        // Get the pseudo to display (original one if user declined save)
+        const displayPseudo = localStorage.getItem("displayPseudo") || localStorage.getItem("originalPseudo") || dbPseudo;
+        
+        console.log("[GRAPHIQUE] isLoggedIn =", isLoggedIn);
+        console.log("[GRAPHIQUE] dbPseudo (for API) =", dbPseudo);
+        console.log("[GRAPHIQUE] displayPseudo (for UI) =", displayPseudo);
+
+        // Update Header Pseudo with the DISPLAY pseudo (not the __guest one)
+        const pseudoEl = document.getElementById('userPseudo');
+        if (pseudoEl) pseudoEl.textContent = displayPseudo;
+
+        if (actionContainer) {
+            actionContainer.innerHTML = ''; // Clear existing
+
+            if (isLoggedIn) {
+                // Logged In: Show "Voir mes données"
+                const myDataBtn = document.createElement('a');
+                myDataBtn.href = `donnees.html?q=${encodeURIComponent(dbPseudo)}`;
+                myDataBtn.className = 'btn-primary';
+                myDataBtn.textContent = 'Voir mes données';
+                myDataBtn.style.marginRight = '10px';
+                actionContainer.appendChild(myDataBtn);
+            } else if (isGuestFromUrl) {
+                // Guest (from URL): Show "Sauvegarder" button
+                const saveBtn = document.createElement('button');
+                saveBtn.className = 'btn-primary';
+                saveBtn.textContent = 'Sauvegarder mes résultats et créer un compte';
+                saveBtn.onclick = openSaveModal;
+                actionContainer.appendChild(saveBtn);
+            }
+            
+            // Always show "Retour à l'accueil"
+            const homeBtn = document.createElement('a');
+            homeBtn.href = 'index.html';
+            homeBtn.className = 'btn-secondary';
+            homeBtn.textContent = "Retour à l'accueil";
+            homeBtn.style.marginLeft = '10px';
+            actionContainer.appendChild(homeBtn);
+        }
+
+        // --- 2. Load Data Logic ---
+        // If guest with data in sessionStorage, load from sessionStorage
+        // If guest who declined (data in DB), load from server
+        // If logged in, load from server
+        console.log("[GRAPHIQUE] About to load data. isGuest =", isGuest, "dbPseudo =", dbPseudo);
+        if (isGuest) {
+            console.log("[GRAPHIQUE] Calling loadGuestData()");
+            loadGuestData();
+        } else {
+            console.log("[GRAPHIQUE] Calling loadUserData() with pseudo =", dbPseudo);
+            loadUserData(dbPseudo);
+        }
+        
+        // Always load global stats
+        console.log("[GRAPHIQUE] Calling loadGlobalStats()");
+        loadGlobalStats();
+
+    } catch (e) {
+        console.error("Error initializing results page:", e);
+    }
+});
+
+function openSaveModal() {
+    // Reuse the register modal from index.html logic, but we need to inject it here or redirect
+    // Simpler approach: Redirect to index.html with a special flag to open register modal
+    // OR: Implement a simple modal here. Let's implement a simple modal here for better UX.
+    
+    let modal = document.getElementById('saveRegisterModal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'saveRegisterModal';
+        modal.className = 'popup-overlay';
+        modal.style.display = 'flex';
+        modal.innerHTML = `
+            <div class="popup-box" style="max-width: 400px;">
+                <h3>Sauvegarder et S'inscrire</h3>
+                <p>Créez un compte pour sauvegarder vos résultats définitivement.</p>
+                <form id="saveRegisterForm">
+                    <div class="input-group" style="margin-bottom: 15px;">
+                        <label>Pseudo</label>
+                        <input type="text" id="savePseudo" required class="input-field" style="width: 100%;">
+                    </div>
+                    <div class="input-group" style="margin-bottom: 15px;">
+                        <label>Email</label>
+                        <input type="email" id="saveEmail" required class="input-field" style="width: 100%;">
+                    </div>
+                    <div class="input-group" style="margin-bottom: 15px;">
+                        <label>Mot de passe</label>
+                        <input type="password" id="savePassword" required class="input-field" style="width: 100%;">
+                    </div>
+                    <div id="saveFeedback" style="color: red; display: none; margin-bottom: 10px;"></div>
+                    <div class="quiz-buttons">
+                        <button type="button" id="saveCancelBtn" class="quiz-btn quiz-btn-cancel">Annuler</button>
+                        <button type="submit" class="quiz-btn quiz-btn-submit">S'inscrire</button>
+                    </div>
+                </form>
+            </div>
+        `;
+        document.body.appendChild(modal);
+        
+        // Pre-fill pseudo - use original pseudo if user had previously declined
+        // Check if user previously declined (originalPseudo or displayPseudo was saved)
+        const originalPseudo = localStorage.getItem("originalPseudo") || localStorage.getItem("displayPseudo");
+        const currentPseudo = localStorage.getItem("pseudo");
+        const pseudoToShow = originalPseudo || currentPseudo;
+        
+        if (pseudoToShow) document.getElementById('savePseudo').value = pseudoToShow;
+
+        document.getElementById('saveCancelBtn').onclick = () => modal.style.display = 'none';
+        
+        document.getElementById('saveRegisterForm').onsubmit = async (e) => {
+            e.preventDefault();
+            console.log("========== SAVE REGISTER FORM SUBMIT ==========");
+            console.log("[SAVE] BEFORE - localStorage.pseudo =", localStorage.getItem("pseudo"));
+            console.log("[SAVE] BEFORE - localStorage.originalPseudo =", localStorage.getItem("originalPseudo"));
+            console.log("[SAVE] BEFORE - localStorage.displayPseudo =", localStorage.getItem("displayPseudo"));
+            
+            const pseudo = document.getElementById('savePseudo').value.trim();
+            const email = document.getElementById('saveEmail').value.trim();
+            const password = document.getElementById('savePassword').value;
+            const feedback = document.getElementById('saveFeedback');
+            
+            // Get the current DB pseudo (might be __guest version if user declined before)
+            const dbPseudo = localStorage.getItem("pseudo");
+            const hadDeclinedBefore = localStorage.getItem("guestDeclinedSave") === "true";
+            
+            console.log("[SAVE] New pseudo from form =", pseudo);
+            console.log("[SAVE] Current DB pseudo =", dbPseudo);
+            console.log("[SAVE] Had declined before =", hadDeclinedBefore);
+            
+            try {
+                // Check if we have session data in sessionStorage (not yet saved to DB)
+                const sessions = JSON.parse(sessionStorage.getItem("feedbackSessions")) || [];
+                
+                // Case 1: Data still in sessionStorage (user never declined, just clicking save)
+                if (sessions.length > 0) {
+                    console.log("[SAVE] Saving", sessions.length, "sessions from sessionStorage");
+                    for (const session of sessions) {
+                        session.user = pseudo;
+                        await fetch(`${API_BASE_URL}/addUser`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(session)
+                        });
+                    }
+                }
+                
+                // Case 2: User had declined before, data is in DB with __guest pseudo
+                // We need to link/migrate that data to the new pseudo
+                if (hadDeclinedBefore && dbPseudo && dbPseudo !== pseudo) {
+                    console.log("[SAVE] Linking guest data from", dbPseudo, "to", pseudo);
+                    await fetch(`${API_BASE_URL}/api/link-guest-data`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ oldPseudo: dbPseudo, newPseudo: pseudo })
+                    });
+                }
+                
+                // 1. Register
+                const regRes = await fetch(`${API_BASE_URL}/api/register`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ pseudo, email, password })
+                });
+                const regData = await regRes.json();
+                
+                if (!regData.success) {
+                    feedback.textContent = regData.message;
+                    feedback.style.display = 'block';
+                    return;
+                }
+
+                // 2. Login
+                const loginRes = await fetch(`${API_BASE_URL}/api/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ pseudo, password })
+                });
+                const loginData = await loginRes.json();
+                
+                if (!loginData.success) {
+                    feedback.textContent = "Inscription réussie, mais échec de connexion automatique.";
+                    feedback.style.display = 'block';
+                    return;
+                }
+                
+                // 3. Update localStorage with the NEW pseudo and clear guest flags
+                // Keep sessionStorage for recap display - will be cleared when starting new session
+                console.log("[SAVE] Setting localStorage.pseudo to:", pseudo);
+                localStorage.setItem("pseudo", pseudo);
+                localStorage.removeItem("displayPseudo");
+                localStorage.removeItem("originalPseudo");
+                localStorage.removeItem("guestDeclinedSave");
+                
+                console.log("[SAVE] AFTER - localStorage.pseudo =", localStorage.getItem("pseudo"));
+                console.log("[SAVE] Redirecting to resultats.html (without ?guest=true)");
+                
+                // 4. Reload as logged in user (without ?guest=true)
+                window.location.href = 'resultats.html';
+
+            } catch (err) {
+                console.error(err);
+                feedback.textContent = "Erreur serveur.";
+                feedback.style.display = 'block';
+            }
+        };
+    } else {
+        modal.style.display = 'flex';
+    }
+}
+
+function loadGuestData() {
+    const sessions = JSON.parse(sessionStorage.getItem("feedbackSessions")) || [];
+    if (sessions.length === 0) return;
+
+    // 1. Calculate Score & Time (Local approximation)
+    let totalScore = 0;
+    let totalTime = 0;
+    
+    // Helper to calculate points (copied from main.js logic)
+    function calculateResolutionPoints(correctRes, userRes) {
+        const iCorrect = RESOLUTION_ORDER.indexOf(correctRes);
+        const iUser = RESOLUTION_ORDER.indexOf(userRes);
+        if (iUser === -1 || iCorrect === -1) return 0;
+        const diff = Math.abs(iUser - iCorrect);
+        if (diff === 0) return 2;
+        if (diff === 1) return 1;
+        return 0;
+    }
+
+    sessions.forEach(session => {
+        // Score
+        const resPoints1 = calculateResolutionPoints(session.resolution1, (session.QO1.match(/\(([^,]*),/) || [])[1]?.trim());
+        const resPoints2 = calculateResolutionPoints(session.resolution2, (session.QO1.match(/,([^)]*)\)/) || [])[1]?.trim());
+        totalScore += resPoints1 + resPoints2;
+        
+        const indexRes1 = RESOLUTION_ORDER.indexOf(session.resolution1);
+        const indexRes2 = RESOLUTION_ORDER.indexOf(session.resolution2);
+        let correctPreference = "inconnu";
+        if (indexRes1 > indexRes2) correctPreference = "first";
+        else if (indexRes2 > indexRes1) correctPreference = "second";
+        else if (indexRes1 !== -1) correctPreference = "none";
+        if (session.QO3 === correctPreference) totalScore += 1;
+
+        // Time (We don't have per-session time stored in session object in main.js, only sent to server)
+        // So we can't easily show total time unless we stored it. 
+        // Assuming we can't show time for now.
+    });
+
+    document.getElementById('userScore').textContent = totalScore;
+    document.getElementById('userTime').textContent = "Non enregistré"; // Or hide
+    document.getElementById('levelText').textContent = "Invité";
+
+    // 2. Generate Data for Charts
+    // We need to transform 'sessions' into the format expected by the chart functions.
+    
+    // Data for: afficherSatisfactionParResolution (Satisfaction Cumulée)
+    // Format: { "1080p": { "verySatisfactory": 5, "correct": 2 ... }, ... }
+    const satisfactionData = {};
+    
+    // Data for: afficherGraphiqueConfusions (Confusions)
+    // Format: [ { pair: "1080p -> 720p", count: 1 }, ... ]
+    const confusionsMap = new Map();
+
+    // Data for: afficherSatisfactionParAppareil (Satisfaction par Appareil)
+    // Format: { "1080p": { "pc": { "verySatisfactory": 1... }, "mobile": ... } }
+    const satisfactionByDeviceData = {};
+
+    sessions.forEach(session => {
+        const device = session.screenType || 'pc'; // Default to pc if missing
+        
+        // Process Video 1
+        if (session.resolution1) {
+            const q1 = (session.QO2.match(/\(([^,]*),/) || [])[1]?.trim(); // Satisfaction 1
+            const p1 = (session.QO1.match(/\(([^,]*),/) || [])[1]?.trim(); // Perception 1
+            
+            if (q1) {
+                // Satisfaction Cumul
+                if (!satisfactionData[session.resolution1]) satisfactionData[session.resolution1] = {};
+                satisfactionData[session.resolution1][q1] = (satisfactionData[session.resolution1][q1] || 0) + 1;
+
+                // Satisfaction Device
+                if (!satisfactionByDeviceData[session.resolution1]) satisfactionByDeviceData[session.resolution1] = {};
+                if (!satisfactionByDeviceData[session.resolution1][device]) satisfactionByDeviceData[session.resolution1][device] = {};
+                satisfactionByDeviceData[session.resolution1][device][q1] = (satisfactionByDeviceData[session.resolution1][device][q1] || 0) + 1;
+            }
+            
+            if (p1) {
+                const pair = `${session.resolution1} → ${p1}`;
+                confusionsMap.set(pair, (confusionsMap.get(pair) || 0) + 1);
+            }
+        }
+
+        // Process Video 2
+        if (session.resolution2) {
+            const q2 = (session.QO2.match(/,([^)]*)\)/) || [])[1]?.trim(); // Satisfaction 2
+            const p2 = (session.QO1.match(/,([^)]*)\)/) || [])[1]?.trim(); // Perception 2
+            
+            if (q2) {
+                // Satisfaction Cumul
+                if (!satisfactionData[session.resolution2]) satisfactionData[session.resolution2] = {};
+                satisfactionData[session.resolution2][q2] = (satisfactionData[session.resolution2][q2] || 0) + 1;
+
+                // Satisfaction Device
+                if (!satisfactionByDeviceData[session.resolution2]) satisfactionByDeviceData[session.resolution2] = {};
+                if (!satisfactionByDeviceData[session.resolution2][device]) satisfactionByDeviceData[session.resolution2][device] = {};
+                satisfactionByDeviceData[session.resolution2][device][q2] = (satisfactionByDeviceData[session.resolution2][device][q2] || 0) + 1;
+            }
+
+            if (p2) {
+                const pair = `${session.resolution2} → ${p2}`;
+                confusionsMap.set(pair, (confusionsMap.get(pair) || 0) + 1);
+            }
+        }
+    });
+
+    // Convert confusions map to array
+    const confusionsArray = Array.from(confusionsMap.entries()).map(([pair, count]) => ({ pair, count }));
+
+    console.log("DEBUG loadGuestData: satisfactionData =", satisfactionData);
+    console.log("DEBUG loadGuestData: confusionsArray =", confusionsArray);
+    console.log("DEBUG loadGuestData: satisfactionByDeviceData =", satisfactionByDeviceData);
+
+    // 3. Render Charts
+    // We use the existing functions!
+    
+    // Satisfaction Cumulée
+    const ctxSat = document.getElementById('chartSatisfactionCumul');
+    if (ctxSat) {
+        // We need to adapt 'afficherSatisfactionParResolution' logic or call it if it was exported?
+        // It is defined in this file, so we can call it directly if we are in the same scope.
+        // Wait, 'afficherSatisfactionParResolution' is defined below. We can call it.
+        afficherSatisfactionParResolution(satisfactionData, 'Votre Satisfaction', 'chartSatisfactionCumul');
+    }
+
+    // Confusions
+    // 'afficherGraphiqueConfusions' expects array of { pair, count }
+    afficherGraphiqueConfusions(confusionsArray, 'chartConfusions', 'Vos Confusions');
+
+    // Satisfaction par Appareil
+    // 'afficherSatisfactionParAppareil' expects { res: { device: { level: count } } }
+    afficherSatisfactionParAppareil(satisfactionByDeviceData, 'satisfactionByDeviceChartsContainer', 'Votre Satisfaction');
+
+    // Show the charts container (it was hidden in previous version)
+    document.getElementById('personalCharts').style.display = 'block';
+    
+    // Note: The "Récapitulatif Détaillé" is populated by displayDetailedRecap() in main.js,
+    // which uses sessionStorage data. This works for both logged-in users and guests.
+}
+
+function loadUserData(pseudo) {
+    // For logged-in users, just load the score and time display.
+    // The charts are handled by main.js -> initPersonalCharts() which uses the proper rendering functions.
+    fetch(`${API_BASE_URL}/getScore?pseudo=${encodeURIComponent(pseudo)}`)
+        .then(r => r.json())
+        .then(d => {
+            const scoreEl = document.getElementById('userScore');
+            if(d.score !== undefined && scoreEl) scoreEl.textContent = d.score;
+        });
+        
+    fetch(`${API_BASE_URL}/getTime?pseudo=${encodeURIComponent(pseudo)}`)
+        .then(r => r.json())
+        .then(d => {
+            const timeEl = document.getElementById('userTime');
+            if(d.time !== undefined && timeEl) {
+                const min = Math.floor(d.time / 60);
+                const sec = d.time % 60;
+                timeEl.textContent = `${min}m ${sec}s`;
+            }
+        });
+    
+    // NOTE: Personal charts are loaded by main.js -> initPersonalCharts()
+    // Do NOT call loadPersonalCharts here to avoid duplicate/conflicting chart creation
+}
+
+function loadGlobalStats() {
+    // Global charts are loaded by main.js -> initGlobalCharts()
+    // Do NOT load them here to avoid duplicate/conflicting chart creation
+}
+
 /**
  * Retourne le nom d'affichage pour un type d'appareil donné.
  * Convertit 'tablet' en 'TABLETTE' et met les autres en majuscules.
@@ -173,13 +580,28 @@ function openChartModal(originalCanvas, titleText) {
  */
 function afficherSatisfactionParResolution(data, chartTitle, canvasId) {
     const canvas = document.getElementById(canvasId);
+    console.log("DEBUG afficherSatisfactionParResolution: canvasId =", canvasId, "canvas =", canvas);
     if (!canvas) return;
     
     let resolutions = Object.keys(data).filter(res => RESOLUTION_ORDER.includes(res))
                           .sort((a, b) => RESOLUTION_ORDER.indexOf(a) - RESOLUTION_ORDER.indexOf(b));
     
+    console.log("DEBUG afficherSatisfactionParResolution: resolutions =", resolutions);
+    
+    if (resolutions.length === 0) {
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.font = "14px Inter";
+        ctx.fillStyle = "#666";
+        ctx.textAlign = "center";
+        ctx.fillText("Aucune donnée à afficher", canvas.width / 2, canvas.height / 2);
+        return;
+    }
+    
     const presentQualityKeys = new Set(Object.values(data).flatMap(res => Object.keys(res)));
+    console.log("DEBUG afficherSatisfactionParResolution: presentQualityKeys =", [...presentQualityKeys]);
     const orderedVisibleQualities = SATISFACTION_LEVELS_CONFIG.filter(level => presentQualityKeys.has(level.key));
+    console.log("DEBUG afficherSatisfactionParResolution: orderedVisibleQualities =", orderedVisibleQualities.map(q => q.key));
     
     const totals = resolutions.map(res => orderedVisibleQualities.reduce((sum, qc) => sum + (data[res]?.[qc.key] || 0), 0));
 
@@ -210,7 +632,6 @@ function afficherSatisfactionParResolution(data, chartTitle, canvasId) {
  * @param {string} [chartTitlePrefix="Satisfaction"] - Préfixe pour le titre de chaque graphique.
  */
 function afficherSatisfactionParAppareil(fullData, containerId, chartTitlePrefix = "Satisfaction") {
-    console.log('***************************************************************************************************************');
     const container = document.getElementById(containerId);
     if (!container) return;
     container.innerHTML = '';
@@ -649,7 +1070,6 @@ function afficherGraphiquePerceptionVideo(canvasId, videoData) {
  * @param {string} videoName - Le nom de la vidéo pour le titre.
  */
 function afficherSatisfactionVideoParAppareil(container, data, videoName) {
-    console.log('***************************************************************************************************************');
     if (!container || Object.keys(data).length === 0) {
         container.innerHTML = "<p style='text-align:center; color: #888; padding: 1rem;'>Pas de données de satisfaction pour cette vidéo.</p>";
         return;

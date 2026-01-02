@@ -67,6 +67,9 @@ const createTables = `
   -- but we store convenient totals as requested.
   CREATE TABLE IF NOT EXISTS users (
     pseudo TEXT PRIMARY KEY,
+    email TEXT UNIQUE,
+    password_hash TEXT,
+    is_admin INTEGER DEFAULT 0,
     totalScore INTEGER DEFAULT 0,
     totalTime INTEGER DEFAULT 0,
     sessionCount INTEGER DEFAULT 0
@@ -75,7 +78,52 @@ const createTables = `
 
 db.exec(createTables);
 
+// --- Post-creation: Triggers and Default Data ---
+
+// 1. Triggers to protect MAIN ADMIN
+const createTriggers = `
+  CREATE TRIGGER IF NOT EXISTS prevent_admin_deletion
+  BEFORE DELETE ON users
+  FOR EACH ROW
+  WHEN OLD.pseudo = 'main_admin'
+  BEGIN
+      SELECT RAISE(ABORT, 'Cannot delete the MAIN ADMIN account.');
+  END;
+
+  CREATE TRIGGER IF NOT EXISTS prevent_admin_demotion
+  BEFORE UPDATE OF is_admin ON users
+  FOR EACH ROW
+  WHEN OLD.pseudo = 'main_admin' AND NEW.is_admin != 1
+  BEGIN
+      SELECT RAISE(ABORT, 'Cannot remove admin status from MAIN ADMIN account.');
+  END;
+
+  CREATE TRIGGER IF NOT EXISTS prevent_admin_rename
+  BEFORE UPDATE OF pseudo ON users
+  FOR EACH ROW
+  WHEN OLD.pseudo = 'main_admin' AND NEW.pseudo != 'main_admin'
+  BEGIN
+      SELECT RAISE(ABORT, 'Cannot rename the MAIN ADMIN account.');
+  END;
+`;
+
+db.exec(createTriggers);
+
+// 2. Ensure MAIN ADMIN exists
+// We use a simple hash for the default password 'terranumerica2025'
+// SHA256('terranumerica2025') = 
+// eb2130df152aa51292b5fb1da3235129ee9b7e581a8dbc0d84927c1e6f067c24
+const insertMainAdmin = `
+  INSERT INTO users (pseudo, email, password_hash, is_admin)
+  VALUES ('main_admin', 'admin@example.com', 'eb2130df152aa51292b5fb1da3235129ee9b7e581a8dbc0d84927c1e6f067c24', 1)
+  ON CONFLICT(pseudo) DO UPDATE SET
+      is_admin = 1;
+`;
+
+db.exec(insertMainAdmin);
+
 console.log("Tables 'sessions' and 'users' created successfully (if they already existed, nothing changed).");
+console.log("Triggers and MAIN ADMIN account ensured.");
 
 // Optional sanity check: list tables
 const tables = db.prepare("SELECT name FROM sqlite_master WHERE type='table' ORDER BY name").all();

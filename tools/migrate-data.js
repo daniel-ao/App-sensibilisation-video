@@ -11,6 +11,9 @@
  * - Defensive field normalization with comments for future adjustments
  */
 
+console.error("MIGRATION DISABLED: This script has been disabled to prevent data duplication.");
+process.exit(1);
+
 const fs = require('fs');
 const path = require('path');
 const Database = require('better-sqlite3');

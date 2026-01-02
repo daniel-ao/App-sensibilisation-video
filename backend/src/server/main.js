@@ -19,6 +19,7 @@ app.use(cookieParser());
 // Servir les fichiers statiques du dossier parent
 const staticPath = path.join(__dirname, '..', '..', '..');
 app.use(express.static(path.join(staticPath, 'frontend')));
+app.use('/frontend', express.static(path.join(staticPath, 'frontend')));
 app.use('/assets', express.static(path.join(staticPath, 'frontend', 'assets')));
 app.use('/Videos_License', express.static(path.join(staticPath, 'Videos_License')));
 app.use('/Videos_Creative_Common', express.static(path.join(staticPath, 'Videos_Creative_Common')));
